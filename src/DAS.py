@@ -49,8 +49,8 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 #	Device constructor
 #------------------------------------------------------------------
-	def __init__(self,cl, name):
-		PyTango.Device_4Impl.__init__(self,cl,name)
+	def __init__(self, cl, name):
+		PyTango.Device_4Impl.__init__(self, cl, name)
 		DAS.init_device(self)
 		self.strTestData = "No test data set"
 
@@ -58,7 +58,7 @@ class DAS(PyTango.Device_4Impl):
 #	Device destructor
 #------------------------------------------------------------------
 	def delete_device(self):
-		print "[Device delete_device method] for device",self.get_name()
+		print "[Device delete_device method] for device", self.get_name()
 
 
 #------------------------------------------------------------------
@@ -83,7 +83,7 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 #	Read Attribute Hardware
 #------------------------------------------------------------------
-	def read_attr_hardware(self,data):
+	def read_attr_hardware(self, data):
 		print "In ", self.get_name(), "::read_attr_hardware()"
 
 
@@ -93,9 +93,9 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 	def read_JobSuccess(self, attr):
 		print "In ", self.get_name(), "::read_JobSuccess()"
-		
+
 		#	Add your own code here
-		
+
 		attr_JobSuccess_read = "Hello Tango world"
 		attr.set_value(attr_JobSuccess_read)
 
@@ -105,9 +105,9 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 	def read_JobFailure(self, attr):
 		print "In ", self.get_name(), "::read_JobFailure()"
-		
+
 		#	Add your own code here
-		
+
 		attr_JobFailure_read = "Hello Tango world"
 		attr.set_value(attr_JobFailure_read)
 
@@ -117,9 +117,9 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 	def read_StatisticsCollected(self, attr):
 		print "In ", self.get_name(), "::read_StatisticsCollected()"
-		
+
 		#	Add your own code here
-		
+
 		attr_StatisticsCollected_read = "Hello Tango world"
 		attr.set_value(attr_StatisticsCollected_read)
 
@@ -138,7 +138,7 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 	def write_TestData(self, attr):
 		print "In ", self.get_name(), "::write_TestData()"
-		data=[]
+		data = []
 		attr.get_write_value(data)
 		print "Attribute value = ", data
 		self.strTestData = data[0]
@@ -190,7 +190,7 @@ class DAS(PyTango.Device_4Impl):
 	def getJobState(self, argin):
 		print "In ", self.get_name(), "::getJobState()"
 		#	Add your own code here
-		argout = "Not implemented"		
+		argout = "Not implemented"
 		return argout
 
 
@@ -204,7 +204,7 @@ class DAS(PyTango.Device_4Impl):
 	def initPlugin(self, argin):
 		print "In ", self.get_name(), "::initPlugin()"
 		#	Add your own code here
-		argout = "Not implemented"		
+		argout = "Not implemented"
 		return argout
 
 
@@ -218,7 +218,7 @@ class DAS(PyTango.Device_4Impl):
 	def cleanJob(self, argin):
 		print "In ", self.get_name(), "::cleanJob()"
 		#	Add your own code here
-		argout = "Not implemented"		
+		argout = "Not implemented"
 		return argout
 
 
@@ -241,7 +241,7 @@ class DAS(PyTango.Device_4Impl):
 	def getStatistics(self):
 		print "In ", self.get_name(), "::getStatistics()"
 		#	Add your own code here
-		argout = "Not implemented"		
+		argout = "Not implemented"
 		return argout
 
 
@@ -269,7 +269,7 @@ class DAS(PyTango.Device_4Impl):
 	def getJobInput(self, argin):
 		print "In ", self.get_name(), "::getJobInput()"
 		#	Add your own code here
-		argout = "Not implemented"		
+		argout = "Not implemented"
 		return argout
 
 
@@ -362,13 +362,13 @@ class DASClass(PyTango.DeviceClass):
 if __name__ == '__main__':
 	try:
 		py = PyTango.Util(sys.argv)
-		py.add_TgClass(DASClass,DAS,'DAS')
+		py.add_TgClass(DASClass, DAS, 'DAS')
 
 		U = PyTango.Util.instance()
 		U.server_init()
 		U.server_run()
 
-	except PyTango.DevFailed,e:
-		print '-------> Received a DevFailed exception:',e
-	except Exception,e:
-		print '-------> An unforeseen exception occured....',e
+	except PyTango.DevFailed, e:
+		print '-------> Received a DevFailed exception:', e
+	except Exception, e:
+		print '-------> An unforeseen exception occured....', e
