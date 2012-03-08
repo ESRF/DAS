@@ -1,0 +1,13 @@
+targetNamespace "DAS"
+
+complex type Server {
+    host : string
+    device : string
+    startScriptPath : string
+    stopScriptPath : string
+}
+
+complex type DASConfig {
+    EDNA : Server []
+    Workflow : Server [] optional
+}

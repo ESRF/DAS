@@ -1,0 +1,11 @@
+/**
+ * Device Class Identification:
+ * 
+ * Class Name   :	DasDS
+ * Contact      :	
+ * Class Family :	Miscellaneous
+ * Platform     :	
+ * Bus          :	
+ * Manufacturer :	none
+ * Reference    :	
+ */

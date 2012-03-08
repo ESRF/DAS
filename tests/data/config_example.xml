@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<DASConfig>
+	<EDNA>
+	    <host>slavia.esrf.fr</host>
+	    <device>DAU/edna/1</device>
+	    <startScriptPath>/users/opd29/edna/bioSaxsv1/bin/edna-tango-server</startScriptPath>
+	    <stopScriptPath>/users/opd29/edna/bioSaxsv1/bin/stop-tango-server</stopScriptPath>
+	</EDNA>
+</DASConfig>
