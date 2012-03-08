@@ -34,6 +34,7 @@
 import PyTango
 import sys
 
+from config import DASConfig
 
 #==================================================================
 #   DasDS Class Description:
@@ -52,7 +53,6 @@ class DasDS(PyTango.Device_4Impl):
 	def __init__(self, cl, name):
 		PyTango.Device_4Impl.__init__(self, cl, name)
 		DasDS.init_device(self)
-		self.strTestData = "No test data set"
 
 #------------------------------------------------------------------
 #	Device destructor
@@ -74,6 +74,7 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 	def always_executed_hook(self):
 		print "In ", self.get_name(), "::always_excuted_hook()"
+
 
 #==================================================================
 #
@@ -287,6 +288,10 @@ class DasDSClass(PyTango.DeviceClass):
 
 	#	Device Properties
 	device_property_list = {
+		'Config':
+			[PyTango.DevString,
+			"General configuration in XML format",
+			[] ],
 		}
 
 
