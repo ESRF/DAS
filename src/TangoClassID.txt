@@ -2,10 +2,10 @@
  * Device Class Identification:
  * 
  * Class Name   :	DasDS
- * Contact      :	
+ * Contact      :	ohlsson,svensson@esrf.fr
  * Class Family :	Miscellaneous
- * Platform     :	
- * Bus          :	
- * Manufacturer :	none
- * Reference    :	
+ * Platform     :	Linux
+ * Bus          :	None
+ * Manufacturer :	None
+ * Reference    :	None
  */

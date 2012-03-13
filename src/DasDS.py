@@ -39,6 +39,8 @@ from config import DASConfig
 #==================================================================
 #   DasDS Class Description:
 #
+#   <b>DasDS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
+#   (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
 #
 #==================================================================
 
@@ -53,15 +55,7 @@ class DasDS(PyTango.Device_4Impl):
     def __init__(self, cl, name):
         PyTango.Device_4Impl.__init__(self, cl, name)
         DasDS.init_device(self)
-        # Get configuration from Tango properties
-        #print dir(self)
-        #self.get_device_properties()
-        db = PyTango.Database()
-        listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
-        # Convert list of lines to one string
-        strXmlConfig = ''.join(listXmlConfig)
-        self._config = DASConfig.parseString(strXmlConfig)
-        print self._config.marshal()
+        self._ednaClient = None
 
 #------------------------------------------------------------------
 #    Device destructor
@@ -75,15 +69,30 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def init_device(self):
         print "In ", self.get_name(), "::init_device()"
+        # Get configuration from Tango properties
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
+        db = PyTango.Database()
+        listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
+        # Convert list of lines to one string
+        strXmlConfig = ''.join(listXmlConfig)
+        self._config = DASConfig.parseString(strXmlConfig)
+        print self._config.marshal()
+        #TODO: fix this
+#        strDevice = str(self._config.EDNA[0].device)
+#        print strDevice
+#        self._ednaClient = PyTango.DeviceProxy(strDevice)
+#        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+#        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+
 
 
 #------------------------------------------------------------------
 #    Always excuted hook method
 #------------------------------------------------------------------
     def always_executed_hook(self):
-        print "In ", self.get_name(), "::always_excuted_hook()"
+        pass
+#        print "In ", self.get_name(), "::always_excuted_hook()"
 
 
 #==================================================================
@@ -100,61 +109,15 @@ class DasDS(PyTango.Device_4Impl):
 
 
 #------------------------------------------------------------------
-#    Read JobSuccess attribute
+#    Read jobFinished attribute
 #------------------------------------------------------------------
-    def read_JobSuccess(self, attr):
-        print "In ", self.get_name(), "::read_JobSuccess()"
+    def read_jobFinished(self, attr):
+        print "In ", self.get_name(), "::read_jobFinished()"
 
         #    Add your own code here
 
-        attr_JobSuccess_read = "Hello Tango world"
-        attr.set_value(attr_JobSuccess_read)
-
-
-#------------------------------------------------------------------
-#    Read JobFailure attribute
-#------------------------------------------------------------------
-    def read_JobFailure(self, attr):
-        print "In ", self.get_name(), "::read_JobFailure()"
-
-        #    Add your own code here
-
-        attr_JobFailure_read = "Hello Tango world"
-        attr.set_value(attr_JobFailure_read)
-
-
-#------------------------------------------------------------------
-#    Read StatisticsCollected attribute
-#------------------------------------------------------------------
-    def read_StatisticsCollected(self, attr):
-        print "In ", self.get_name(), "::read_StatisticsCollected()"
-
-        #    Add your own code here
-
-        attr_StatisticsCollected_read = "Hello Tango world"
-        attr.set_value(attr_StatisticsCollected_read)
-
-
-#------------------------------------------------------------------
-#    Read TestData attribute
-#------------------------------------------------------------------
-    def read_TestData(self, attr):
-        print "In ", self.get_name(), "::read_TestData()"
-        attr_TestData_read = self.strTestData
-        attr.set_value(attr_TestData_read)
-
-
-#------------------------------------------------------------------
-#    Write TestData attribute
-#------------------------------------------------------------------
-    def write_TestData(self, attr):
-        print "In ", self.get_name(), "::write_TestData()"
-        data = []
-        attr.get_write_value(data)
-        print "Attribute value = ", data
-        self.strTestData = data[0]
-        self.push_change_event("TestData", self.strTestData)
-
+        attr_jobFinished_read = ["No job launched yet", "failure"]
+        attr.set_value(attr_jobFinished_read)
 
 
 #==================================================================
@@ -166,14 +129,18 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 #    startJob command:
 #
-#    Description: 
-#    argin:  DevVarStringArray    [<Module to execute>,<XML input>]
+#    Description:  
+#    argin:  DevVarStringArray    [<Job to execute>,<XML input for job>]
 #    argout: DevString    job id
 #------------------------------------------------------------------
     def startJob(self, argin):
         print "In ", self.get_name(), "::startJob()"
-        #    Add your own code here
-        argout = "Not implemented"
+        strDevice = str(self._config.EDNA[0].device)
+        print strDevice
+        self._ednaClient = PyTango.DeviceProxy(strDevice)
+        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+        argout = self._ednaClient.startJob(argin)
         return argout
 
 
@@ -220,43 +187,6 @@ class DasDS(PyTango.Device_4Impl):
 
 
 #------------------------------------------------------------------
-#    cleanJob command:
-#
-#    Description: 
-#    argin:  DevString    jobId
-#    argout: DevString    Message
-#------------------------------------------------------------------
-    def cleanJob(self, argin):
-        print "In ", self.get_name(), "::cleanJob()"
-        #    Add your own code here
-        argout = "Not implemented"
-        return argout
-
-
-#------------------------------------------------------------------
-#    collectStatistics command:
-#
-#    Description: 
-#------------------------------------------------------------------
-    def collectStatistics(self):
-        print "In ", self.get_name(), "::collectStatistics()"
-        #    Add your own code here
-
-
-#------------------------------------------------------------------
-#    getStatistics command:
-#
-#    Description: 
-#    argout: DevString    Retrieve statistics about jobs
-#------------------------------------------------------------------
-    def getStatistics(self):
-        print "In ", self.get_name(), "::getStatistics()"
-        #    Add your own code here
-        argout = "Not implemented"
-        return argout
-
-
-#------------------------------------------------------------------
 #    getJobOutput command:
 #
 #    Description: 
@@ -271,17 +201,27 @@ class DasDS(PyTango.Device_4Impl):
 
 
 #------------------------------------------------------------------
-#    getJobInput command:
+#    jobSuccess command:
 #
 #    Description: 
 #    argin:  DevString    jobId
-#    argout: DevString    job input xml
+#    argout: None
 #------------------------------------------------------------------
-    def getJobInput(self, argin):
-        print "In ", self.get_name(), "::getJobInput()"
-        #    Add your own code here
-        argout = "Not implemented"
-        return argout
+    def jobSuccess(self, argin):
+        print argin.attr_value.value
+        self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
+
+
+#------------------------------------------------------------------
+#    jobFailure command:
+#
+#    Description: 
+#    argin:  DevString    jobId
+#    argout: None
+#------------------------------------------------------------------
+    def jobFailure(self, argin):
+        print argin.attr_value.value
+        self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
 
 
 #==================================================================
@@ -319,42 +259,18 @@ class DasDSClass(PyTango.DeviceClass):
         'initPlugin':
             [[PyTango.DevString, "plugin name"],
             [PyTango.DevString, "Message"]],
-        'cleanJob':
-            [[PyTango.DevString, "jobId"],
-            [PyTango.DevString, "Message"]],
-        'collectStatistics':
-            [[PyTango.DevVoid, "nothing needed"],
-            [PyTango.DevVoid, "Collect some statistics about jobs"]],
-        'getStatistics':
-            [[PyTango.DevVoid, "nothing needed"],
-            [PyTango.DevString, "Retrieve statistics about jobs"]],
         'getJobOutput':
             [[PyTango.DevString, "jobId"],
             [PyTango.DevString, "job output xml"]],
-        'getJobInput':
-            [[PyTango.DevString, "jobId"],
-            [PyTango.DevString, "job input xml"]],
         }
 
 
     #    Attribute definitions
     attr_list = {
-        'JobSuccess':
+        'jobFinished':
             [[PyTango.DevString,
-            PyTango.SCALAR,
-            PyTango.READ]],
-        'JobFailure':
-            [[PyTango.DevString,
-            PyTango.SCALAR,
-            PyTango.READ]],
-        'StatisticsCollected':
-            [[PyTango.DevString,
-            PyTango.SCALAR,
-            PyTango.READ]],
-        'TestData':
-            [[PyTango.DevString,
-            PyTango.SCALAR,
-            PyTango.READ_WRITE],
+            PyTango.SPECTRUM,
+            PyTango.READ, 2],
             {
                 'Polling period':100000,
             } ],
