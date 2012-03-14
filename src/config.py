@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Generated Thu Mar 8 10:59::48 2012 by EDGenerateDS.
+# Generated Wed Mar 14 09:35::39 2012 by EDGenerateDS.
 #
 
 import os, sys
@@ -99,13 +99,15 @@ class MixedContainer(object):
 
 
 class Server(object):
-	def __init__(self, stopScriptPath=None, startScriptPath=None, device=None, host=None):
+	def __init__(self, stopScriptPath=None, startScriptPath=None, tangHost=None, device=None, host=None):
 	
 	
 		checkType("Server", "Constructor of Server", host, "string")
 		self._host = host
 		checkType("Server", "Constructor of Server", device, "string")
 		self._device = device
+		checkType("Server", "Constructor of Server", tangHost, "string")
+		self._tangHost = tangHost
 		checkType("Server", "Constructor of Server", startScriptPath, "string")
 		self._startScriptPath = startScriptPath
 		checkType("Server", "Constructor of Server", stopScriptPath, "string")
@@ -124,6 +126,13 @@ class Server(object):
 	def delDevice(self): self._device = None
 	# Properties
 	device = property(getDevice, setDevice, delDevice, "Property for device")
+	def getTangHost(self): return self._tangHost
+	def setTangHost(self, tangHost):
+		checkType("Server", "setTangHost", tangHost, "string")
+		self._tangHost = tangHost
+	def delTangHost(self): self._tangHost = None
+	# Properties
+	tangHost = property(getTangHost, setTangHost, delTangHost, "Property for tangHost")
 	def getStartScriptPath(self): return self._startScriptPath
 	def setStartScriptPath(self, startScriptPath):
 		checkType("Server", "setStartScriptPath", startScriptPath, "string")
@@ -156,6 +165,11 @@ class Server(object):
 			outfile.write(unicode('<device>%s</device>\n' % self._device))
 		else:
 			warnEmptyAttribute("device", "string")
+		if self._tangHost is not None:
+			showIndent(outfile, level)
+			outfile.write(unicode('<tangHost>%s</tangHost>\n' % self._tangHost))
+		else:
+			warnEmptyAttribute("tangHost", "string")
 		if self._startScriptPath is not None:
 			showIndent(outfile, level)
 			outfile.write(unicode('<startScriptPath>%s</startScriptPath>\n' % self._startScriptPath))
@@ -185,6 +199,13 @@ class Server(object):
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
 			self._device = value_
+		elif child_.nodeType == Node.ELEMENT_NODE and \
+			nodeName_ == 'tangHost':
+			value_ = ''
+			for text__content_ in child_.childNodes:
+				if text__content_.nodeValue is not None:
+					value_ += text__content_.nodeValue
+			self._tangHost = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'startScriptPath':
 			value_ = ''

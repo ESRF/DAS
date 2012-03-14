@@ -3,6 +3,7 @@ targetNamespace "DAS"
 complex type Server {
     host : string
     device : string
+    tangHost : string
     startScriptPath : string
     stopScriptPath : string
 }
