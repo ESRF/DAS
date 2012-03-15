@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<DASConfig>
+  <EDNA>
+    <host>linsvensson.esrf.fr</host>
+    <tangoDevice>DAU/edna/1</tangoDevice>
+    <tangoHost>linsvensson.esrf.fr:10000</tangoHost>
+    <tangoServerName>linsvensson</tangoServerName>
+    <startScriptPath>/opt/pxsoft/bin/edna-tango-server</startScriptPath>
+    <stopScriptPath>/opt/pxsoft/bin/stop-tango-server</stopScriptPath>
+  </EDNA>
+</DASConfig>

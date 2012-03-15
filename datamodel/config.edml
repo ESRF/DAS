@@ -2,8 +2,9 @@ targetNamespace "DAS"
 
 complex type Server {
     host : string
-    device : string
-    tangHost : string
+    tangoDevice : string
+    tangoHost : string
+    tangoServerName : string
     startScriptPath : string
     stopScriptPath : string
 }

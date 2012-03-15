@@ -11,7 +11,7 @@ def failure(event):
     print "FAILURE!", event.attr_value.value
 
 
-dev = PyTango.DeviceProxy("mx/edna/1")
+dev = PyTango.DeviceProxy("DAS/linsvensson/1")
 dev.subscribe_event("jobFinished", PyTango.EventType.CHANGE_EVENT, jobFinished, [])
 dev.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, success, [])
 dev.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, failure, [])

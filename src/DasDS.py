@@ -64,6 +64,7 @@ class DasDS(PyTango.Device_4Impl):
         PyTango.Device_4Impl.__init__(self, cl, name)
         DasDS.init_device(self)
         self._ednaClient = None
+        self._config = None
 
 #------------------------------------------------------------------
 #    Device destructor
@@ -80,22 +81,56 @@ class DasDS(PyTango.Device_4Impl):
         # Get configuration from Tango properties
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
+        self._config = self.loadConfig()
+#        self.startServers(self._config.EDNA)
+#        self.startServers(self._config.Workflow)
+        
+        
+        
+    def loadConfig(self):
         db = PyTango.Database()
         listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
-        print listXmlConfig, type(listXmlConfig)
+        #print listXmlConfig, type(listXmlConfig)
+        config = None
         if len(listXmlConfig) == 0:
-            print "ERROR! No property 'Config' found for device server %s" % self.get_name()
+            print "ERROR! No property 'Config' defined in Tango data base for device server %s" % self.get_name()
             sys.exit(1)
         try:
             # Convert list of lines to one string
             strXmlConfig = ''.join(listXmlConfig)
-            self._config = DASConfig.parseString(strXmlConfig)
-            print self._config.marshal()
-        except Exception, e:
+            config = DASConfig.parseString(strXmlConfig)
+            print config.marshal()
+        except Exception:
             print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
             print "Config XML:"
             print strXmlConfig
-            sys.exit(1)
+            raise
+        return config
+
+
+    def startServers(self, _listServers):
+        """Starts the EDNA and Workflow servers - if necessary"""
+        bServerStarted = False
+        for server in _listServers:
+            if not bServerStarted:
+                strTangoDevice = server.tangoDevice
+                try:
+                    tangoDeviceProxy = PyTango.DeviceProxy(strTangoDevice)
+                    tangoDeviceProxy.ping()
+                    bServerStarted = True
+                except Exception:
+                    pass
+            if not bServerStarted:
+                # The server doesn't run - we try to start it
+                strHost = server.host
+                strServerName = server.tangoServerName
+                strPathToStartScript = server.startScriptPath
+                strPathToStopScript = server.stopScriptPath
+                # First stop the server
+                
+                
+                
+        
             
             #TODO: fix this
 #        strDevice = str(self._config.EDNA[0].device)
@@ -313,11 +348,17 @@ class DasDSClass(PyTango.DeviceClass):
         'JobSuccess':
             [[PyTango.DevString,
             PyTango.SCALAR,
-            PyTango.READ]],
+            PyTango.READ],
+            {
+                'Polling period':100000,
+            } ],
         'JobFailure':
             [[PyTango.DevString,
             PyTango.SCALAR,
-            PyTango.READ]],
+            PyTango.READ],
+            {
+                'Polling period':100000,
+            } ],
         'jobFinished':
             [[PyTango.DevString,
             PyTango.SPECTRUM,

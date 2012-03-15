@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Generated Wed Mar 14 09:35::39 2012 by EDGenerateDS.
+# Generated Thu Mar 15 03:52::58 2012 by EDGenerateDS.
 #
 
 import os, sys
@@ -43,8 +43,9 @@ def checkType(_strClassName, _strMethodName, _value, _strExpectedType):
 
 
 def warnEmptyAttribute(_strName, _strTypeName):
-	if not _strTypeName in ["float", "double", "string", "boolean", "integer"]:
-		print("Warning! Non-optional attribute %s of type %s is None!" % (_strName, _strTypeName))
+	pass
+	#if not _strTypeName in ["float", "double", "string", "boolean", "integer"]:
+	#		print("Warning! Non-optional attribute %s of type %s is None!" % (_strName, _strTypeName))
 
 class MixedContainer(object):
 	# Constants for category:
@@ -99,52 +100,59 @@ class MixedContainer(object):
 
 
 class Server(object):
-	def __init__(self, stopScriptPath=None, startScriptPath=None, tangHost=None, device=None, host=None):
-	
-	
+	def __init__(self, stopScriptPath=None, startScriptPath=None, tangoServerName=None, tangoHost=None, tangoDevice=None, host=None):
 		checkType("Server", "Constructor of Server", host, "string")
-		self._host = host
-		checkType("Server", "Constructor of Server", device, "string")
-		self._device = device
-		checkType("Server", "Constructor of Server", tangHost, "string")
-		self._tangHost = tangHost
+		self.__host = host
+		checkType("Server", "Constructor of Server", tangoDevice, "string")
+		self.__tangoDevice = tangoDevice
+		checkType("Server", "Constructor of Server", tangoHost, "string")
+		self.__tangoHost = tangoHost
+		checkType("Server", "Constructor of Server", tangoServerName, "string")
+		self.__tangoServerName = tangoServerName
 		checkType("Server", "Constructor of Server", startScriptPath, "string")
-		self._startScriptPath = startScriptPath
+		self.__startScriptPath = startScriptPath
 		checkType("Server", "Constructor of Server", stopScriptPath, "string")
-		self._stopScriptPath = stopScriptPath
-	def getHost(self): return self._host
+		self.__stopScriptPath = stopScriptPath
+	def getHost(self): return self.__host
 	def setHost(self, host):
 		checkType("Server", "setHost", host, "string")
-		self._host = host
-	def delHost(self): self._host = None
+		self.__host = host
+	def delHost(self): self.__host = None
 	# Properties
 	host = property(getHost, setHost, delHost, "Property for host")
-	def getDevice(self): return self._device
-	def setDevice(self, device):
-		checkType("Server", "setDevice", device, "string")
-		self._device = device
-	def delDevice(self): self._device = None
+	def getTangoDevice(self): return self.__tangoDevice
+	def setTangoDevice(self, tangoDevice):
+		checkType("Server", "setTangoDevice", tangoDevice, "string")
+		self.__tangoDevice = tangoDevice
+	def delTangoDevice(self): self.__tangoDevice = None
 	# Properties
-	device = property(getDevice, setDevice, delDevice, "Property for device")
-	def getTangHost(self): return self._tangHost
-	def setTangHost(self, tangHost):
-		checkType("Server", "setTangHost", tangHost, "string")
-		self._tangHost = tangHost
-	def delTangHost(self): self._tangHost = None
+	tangoDevice = property(getTangoDevice, setTangoDevice, delTangoDevice, "Property for tangoDevice")
+	def getTangoHost(self): return self.__tangoHost
+	def setTangoHost(self, tangoHost):
+		checkType("Server", "setTangoHost", tangoHost, "string")
+		self.__tangoHost = tangoHost
+	def delTangoHost(self): self.__tangoHost = None
 	# Properties
-	tangHost = property(getTangHost, setTangHost, delTangHost, "Property for tangHost")
-	def getStartScriptPath(self): return self._startScriptPath
+	tangoHost = property(getTangoHost, setTangoHost, delTangoHost, "Property for tangoHost")
+	def getTangoServerName(self): return self.__tangoServerName
+	def setTangoServerName(self, tangoServerName):
+		checkType("Server", "setTangoServerName", tangoServerName, "string")
+		self.__tangoServerName = tangoServerName
+	def delTangoServerName(self): self.__tangoServerName = None
+	# Properties
+	tangoServerName = property(getTangoServerName, setTangoServerName, delTangoServerName, "Property for tangoServerName")
+	def getStartScriptPath(self): return self.__startScriptPath
 	def setStartScriptPath(self, startScriptPath):
 		checkType("Server", "setStartScriptPath", startScriptPath, "string")
-		self._startScriptPath = startScriptPath
-	def delStartScriptPath(self): self._startScriptPath = None
+		self.__startScriptPath = startScriptPath
+	def delStartScriptPath(self): self.__startScriptPath = None
 	# Properties
 	startScriptPath = property(getStartScriptPath, setStartScriptPath, delStartScriptPath, "Property for startScriptPath")
-	def getStopScriptPath(self): return self._stopScriptPath
+	def getStopScriptPath(self): return self.__stopScriptPath
 	def setStopScriptPath(self, stopScriptPath):
 		checkType("Server", "setStopScriptPath", stopScriptPath, "string")
-		self._stopScriptPath = stopScriptPath
-	def delStopScriptPath(self): self._stopScriptPath = None
+		self.__stopScriptPath = stopScriptPath
+	def delStopScriptPath(self): self.__stopScriptPath = None
 	# Properties
 	stopScriptPath = property(getStopScriptPath, setStopScriptPath, delStopScriptPath, "Property for stopScriptPath")
 	def export(self, outfile, level, name_='Server'):
@@ -155,29 +163,34 @@ class Server(object):
 		outfile.write(unicode('</%s>\n' % name_))
 	def exportChildren(self, outfile, level, name_='Server'):
 		pass
-		if self._host is not None:
+		if self.__host is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<host>%s</host>\n' % self._host))
+			outfile.write(unicode('<host>%s</host>\n' % self.__host))
 		else:
 			warnEmptyAttribute("host", "string")
-		if self._device is not None:
+		if self.__tangoDevice is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<device>%s</device>\n' % self._device))
+			outfile.write(unicode('<tangoDevice>%s</tangoDevice>\n' % self.__tangoDevice))
 		else:
-			warnEmptyAttribute("device", "string")
-		if self._tangHost is not None:
+			warnEmptyAttribute("tangoDevice", "string")
+		if self.__tangoHost is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<tangHost>%s</tangHost>\n' % self._tangHost))
+			outfile.write(unicode('<tangoHost>%s</tangoHost>\n' % self.__tangoHost))
 		else:
-			warnEmptyAttribute("tangHost", "string")
-		if self._startScriptPath is not None:
+			warnEmptyAttribute("tangoHost", "string")
+		if self.__tangoServerName is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<startScriptPath>%s</startScriptPath>\n' % self._startScriptPath))
+			outfile.write(unicode('<tangoServerName>%s</tangoServerName>\n' % self.__tangoServerName))
+		else:
+			warnEmptyAttribute("tangoServerName", "string")
+		if self.__startScriptPath is not None:
+			showIndent(outfile, level)
+			outfile.write(unicode('<startScriptPath>%s</startScriptPath>\n' % self.__startScriptPath))
 		else:
 			warnEmptyAttribute("startScriptPath", "string")
-		if self._stopScriptPath is not None:
+		if self.__stopScriptPath is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<stopScriptPath>%s</stopScriptPath>\n' % self._stopScriptPath))
+			outfile.write(unicode('<stopScriptPath>%s</stopScriptPath>\n' % self.__stopScriptPath))
 		else:
 			warnEmptyAttribute("stopScriptPath", "string")
 	def build(self, node_):
@@ -191,35 +204,42 @@ class Server(object):
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self._host = value_
+			self.__host = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
-			nodeName_ == 'device':
+			nodeName_ == 'tangoDevice':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self._device = value_
+			self.__tangoDevice = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
-			nodeName_ == 'tangHost':
+			nodeName_ == 'tangoHost':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self._tangHost = value_
+			self.__tangoHost = value_
+		elif child_.nodeType == Node.ELEMENT_NODE and \
+			nodeName_ == 'tangoServerName':
+			value_ = ''
+			for text__content_ in child_.childNodes:
+				if text__content_.nodeValue is not None:
+					value_ += text__content_.nodeValue
+			self.__tangoServerName = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'startScriptPath':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self._startScriptPath = value_
+			self.__startScriptPath = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'stopScriptPath':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self._stopScriptPath = value_
+			self.__stopScriptPath = value_
 	#Method for marshalling an object
 	def marshal( self ):
 		oStreamString = StringIO()
@@ -265,44 +285,42 @@ class Server(object):
 
 class DASConfig(object):
 	def __init__(self, Workflow=None, EDNA=None):
-	
-	
 		if EDNA is None:
-			self._EDNA = []
+			self.__EDNA = []
 		else:
 			checkType("DASConfig", "Constructor of DASConfig", EDNA, "list")
-			self._EDNA = EDNA
+			self.__EDNA = EDNA
 		if Workflow is None:
-			self._Workflow = []
+			self.__Workflow = []
 		else:
 			checkType("DASConfig", "Constructor of DASConfig", Workflow, "list")
-			self._Workflow = Workflow
-	def getEDNA(self): return self._EDNA
+			self.__Workflow = Workflow
+	def getEDNA(self): return self.__EDNA
 	def setEDNA(self, EDNA):
 		checkType("DASConfig", "setEDNA", EDNA, "list")
-		self._EDNA = EDNA
-	def delEDNA(self): self._EDNA = None
+		self.__EDNA = EDNA
+	def delEDNA(self): self.__EDNA = None
 	# Properties
 	EDNA = property(getEDNA, setEDNA, delEDNA, "Property for EDNA")
 	def addEDNA(self, value):
 		checkType("DASConfig", "setEDNA", value, "Server")
-		self._EDNA.append(value)
+		self.__EDNA.append(value)
 	def insertEDNA(self, index, value):
 		checkType("DASConfig", "setEDNA", value, "Server")
-		self._EDNA[index] = value
-	def getWorkflow(self): return self._Workflow
+		self.__EDNA[index] = value
+	def getWorkflow(self): return self.__Workflow
 	def setWorkflow(self, Workflow):
 		checkType("DASConfig", "setWorkflow", Workflow, "list")
-		self._Workflow = Workflow
-	def delWorkflow(self): self._Workflow = None
+		self.__Workflow = Workflow
+	def delWorkflow(self): self.__Workflow = None
 	# Properties
 	Workflow = property(getWorkflow, setWorkflow, delWorkflow, "Property for Workflow")
 	def addWorkflow(self, value):
 		checkType("DASConfig", "setWorkflow", value, "Server")
-		self._Workflow.append(value)
+		self.__Workflow.append(value)
 	def insertWorkflow(self, index, value):
 		checkType("DASConfig", "setWorkflow", value, "Server")
-		self._Workflow[index] = value
+		self.__Workflow[index] = value
 	def export(self, outfile, level, name_='DASConfig'):
 		showIndent(outfile, level)
 		outfile.write(unicode('<%s>\n' % name_))
