@@ -42,6 +42,14 @@ from config import DASConfig
 #   <b>DasDS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
 #   (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
 #
+#   <hr>
+#   <h2>The communication sequence UML diagram:</h2>
+#   <br><img src="Communication.png" alt="The communication sequence UML diagram"</img>
+#
+#   <hr>
+#   <a href="../../tests/test_edna_mx.py">Sample Python client</a>
+#   <hr>
+#
 #==================================================================
 
 
@@ -74,11 +82,22 @@ class DasDS(PyTango.Device_4Impl):
         self.get_device_properties(self.get_device_class())
         db = PyTango.Database()
         listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
-        # Convert list of lines to one string
-        strXmlConfig = ''.join(listXmlConfig)
-        self._config = DASConfig.parseString(strXmlConfig)
-        print self._config.marshal()
-        #TODO: fix this
+        print listXmlConfig, type(listXmlConfig)
+        if len(listXmlConfig) == 0:
+            print "ERROR! No property 'Config' found for device server %s" % self.get_name()
+            sys.exit(1)
+        try:
+            # Convert list of lines to one string
+            strXmlConfig = ''.join(listXmlConfig)
+            self._config = DASConfig.parseString(strXmlConfig)
+            print self._config.marshal()
+        except Exception, e:
+            print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
+            print "Config XML:"
+            print strXmlConfig
+            sys.exit(1)
+            
+            #TODO: fix this
 #        strDevice = str(self._config.EDNA[0].device)
 #        print strDevice
 #        self._ednaClient = PyTango.DeviceProxy(strDevice)
@@ -108,6 +127,30 @@ class DasDS(PyTango.Device_4Impl):
 
 
 
+#------------------------------------------------------------------
+#    Read JobSuccess attribute
+#------------------------------------------------------------------
+    def read_JobSuccess(self, attr):
+        print "In ", self.get_name(), "::read_JobSuccess()"
+
+        #    Add your own code here
+
+        attr_JobSuccess_read = "Hello Tango world"
+        attr.set_value(attr_JobSuccess_read)
+
+
+#------------------------------------------------------------------
+#    Read JobFailure attribute
+#------------------------------------------------------------------
+    def read_JobFailure(self, attr):
+        print "In ", self.get_name(), "::read_JobFailure()"
+
+        #    Add your own code here
+
+        attr_JobFailure_read = "Hello Tango world"
+        attr.set_value(attr_JobFailure_read)
+        
+        
 #------------------------------------------------------------------
 #    Read jobFinished attribute
 #------------------------------------------------------------------
@@ -267,6 +310,14 @@ class DasDSClass(PyTango.DeviceClass):
 
     #    Attribute definitions
     attr_list = {
+        'JobSuccess':
+            [[PyTango.DevString,
+            PyTango.SCALAR,
+            PyTango.READ]],
+        'JobFailure':
+            [[PyTango.DevString,
+            PyTango.SCALAR,
+            PyTango.READ]],
         'jobFinished':
             [[PyTango.DevString,
             PyTango.SPECTRUM,
