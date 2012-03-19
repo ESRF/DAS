@@ -108,29 +108,6 @@ class DasDS(PyTango.Device_4Impl):
         return config
 
 
-    def startServers(self, _listServers):
-        """Starts the EDNA and Workflow servers - if necessary"""
-        bServerStarted = False
-        for server in _listServers:
-            if not bServerStarted:
-                strTangoDevice = server.tangoDevice
-                try:
-                    tangoDeviceProxy = PyTango.DeviceProxy(strTangoDevice)
-                    tangoDeviceProxy.ping()
-                    bServerStarted = True
-                except Exception:
-                    pass
-            if not bServerStarted:
-                # The server doesn't run - we try to start it
-                strHost = server.host
-                strServerName = server.tangoServerName
-                strPathToStartScript = server.startScriptPath
-                strPathToStopScript = server.stopScriptPath
-                # First stop the server
-                
-                
-                
-        
             
             #TODO: fix this
 #        strDevice = str(self._config.EDNA[0].device)
