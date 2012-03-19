@@ -1,6 +1,6 @@
 
 import PyTango
-import socket
+import os, socket
 
 
 
@@ -37,8 +37,8 @@ class ServerControl(object):
                 # The server doesn't run - we try to start it
                 print "Trying to start DasDS server '%s' on the computer %s" % (strServerName, strHost)
                 # First run the stop server script - in case the server is stuck
-                os.system("%s %s" % (strPathToStartScript, strServerName)
+                #print "%s %s" % (strPathToStopScript, strServerName)
+                os.system("%s %s" % (strPathToStopScript, strServerName))
+                # Then start the server
+                os.system("%s %s" % (strPathToStartScript, strServerName))
                 
-                
-                
-        

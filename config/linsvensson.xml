@@ -5,7 +5,7 @@
     <tangoDevice>DAU/edna/1</tangoDevice>
     <tangoHost>linsvensson.esrf.fr:10000</tangoHost>
     <tangoServerName>linsvensson</tangoServerName>
-    <startScriptPath>/opt/pxsoft/bin/edna-tango-server</startScriptPath>
-    <stopScriptPath>/opt/pxsoft/bin/stop-tango-server</stopScriptPath>
+    <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
+    <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
   </EDNA>
 </DASConfig>

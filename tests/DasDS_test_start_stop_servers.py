@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import sys, socket
+import os, sys, socket
 sys.path.append("../src")
 
 from config import DASConfig # IGNORE:E0611
@@ -22,7 +22,11 @@ class DasDS_test_start_stop_servers(TestCase):
 
     def test_start_EDNA_server(self):
         # Read test data - note that this depends on the system
-        with open("../config/astros.xml") as f:
+        strPathToConfigFile = "../config/%s.xml" % socket.gethostname()
+        if not os.path.exists(strPathToConfigFile):
+            raise BaseException("Cannot find configuration file: %s" % strPathToConfigFile)
+        print "Using configuration file: %s" % os.path.abspath(strPathToConfigFile)
+        with open(strPathToConfigFile) as f:
             strXmlConfig = f.read()
             config = DASConfig.parseString(strXmlConfig)
             ServerControl.startServers(config.EDNA)
