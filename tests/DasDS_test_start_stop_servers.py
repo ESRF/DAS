@@ -29,5 +29,5 @@ class DasDS_test_start_stop_servers(TestCase):
         with open(strPathToConfigFile) as f:
             strXmlConfig = f.read()
             config = DASConfig.parseString(strXmlConfig)
-            ServerControl.startServers(config.EDNA)
+            ServerControl.startServer(config.EDNA)
     

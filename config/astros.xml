@@ -1,11 +1,18 @@
 <?xml version="1.0" ?>
 <DASConfig>
   <EDNA>
-    <host>astros.esrf.fr</host>
-    <tangoDevice>DAU/edna/1</tangoDevice>
+    <tangoDevice>edna/astros/1</tangoDevice>
     <tangoHost>astros.esrf.fr:10000</tangoHost>
     <tangoServerName>astros</tangoServerName>
-    <startScriptPath>/users/svensson/git/edna/edna-tango-server</startScriptPath>
-    <stopScriptPath>/users/svensson/git/edna/stop-tango-server</stopScriptPath>
+    <principalServer>
+      <host>astros.esrf.fr</host>
+      <startScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-start</startScriptPath>
+      <stopScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-stop</stopScriptPath>
+    </principalServer>
+    <alternativeServer>
+      <host>astros.esrf.fr</host>
+      <startScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-start</startScriptPath>
+      <stopScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-stop</stopScriptPath>
+    </alternativeServer>
   </EDNA>
 </DASConfig>

@@ -1,15 +1,21 @@
 targetNamespace "DAS"
 
+
 complex type Server {
-    host : string
     tangoDevice : string
     tangoHost : string
     tangoServerName : string
+    principalServer : ServerData
+    alternativeServer : ServerData [] optional
+}
+
+complex type ServerData {
+    host : string
     startScriptPath : string
     stopScriptPath : string
 }
 
 complex type DASConfig {
-    EDNA : Server []
-    Workflow : Server [] optional
+    EDNA : Server
+    Workflow : Server optional
 }

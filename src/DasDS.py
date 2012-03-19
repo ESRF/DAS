@@ -35,6 +35,7 @@ import PyTango
 import sys
 
 from config import DASConfig
+from ServerControl import ServerControl
 
 #==================================================================
 #   DasDS Class Description:
@@ -82,8 +83,8 @@ class DasDS(PyTango.Device_4Impl):
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
         self._config = self.loadConfig()
-#        self.startServers(self._config.EDNA)
-#        self.startServers(self._config.Workflow)
+        ServerControl.startServer(self._config.EDNA)
+        ServerControl.startServer(self._config.Workflow)
         
         
         
