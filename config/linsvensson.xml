@@ -6,8 +6,8 @@
     <tangoServerName>linsvensson</tangoServerName>
     <principalServer>
 	    <host>linsvensson.esrf.fr</host>
-	    <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
-	    <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
+	    <startScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-start</startScriptPath>
+	    <stopScriptPath>/users/svensson/git/edna/tango/bin/edna-tango-server-stop</stopScriptPath>
 	</principalServer>
   </EDNA>
 </DASConfig>

@@ -100,7 +100,7 @@ class DasDS(PyTango.Device_4Impl):
             # Convert list of lines to one string
             strXmlConfig = ''.join(listXmlConfig)
             config = DASConfig.parseString(strXmlConfig)
-            print config.marshal()
+            #print config.marshal()
         except Exception:
             print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
             print "Config XML:"
@@ -191,12 +191,15 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def startJob(self, argin):
         print "In ", self.get_name(), "::startJob()"
-        strDevice = str(self._config.EDNA[0].device)
+        self._config = self.loadConfig()        
+        strDevice = str(self._config.EDNA.tangoDevice)
         print strDevice
         self._ednaClient = PyTango.DeviceProxy(strDevice)
         self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
         self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+        print "argin = ", argin
         argout = self._ednaClient.startJob(argin)
+        print "argout = ", argout
         return argout
 
 
@@ -264,7 +267,9 @@ class DasDS(PyTango.Device_4Impl):
 #    argout: None
 #------------------------------------------------------------------
     def jobSuccess(self, argin):
+        print "In ", self.get_name(), "::jobSuccess()"
         print argin.attr_value.value
+        self.push_change_event("jobSuccess", argin.attr_value.value)
         self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
 
 
@@ -276,7 +281,9 @@ class DasDS(PyTango.Device_4Impl):
 #    argout: None
 #------------------------------------------------------------------
     def jobFailure(self, argin):
+        print "In ", self.get_name(), "::jobFailure()"
         print argin.attr_value.value
+        self.push_change_event("jobFailure", argin.attr_value.value)
         self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
 
 
@@ -328,21 +335,21 @@ class DasDSClass(PyTango.DeviceClass):
             PyTango.SCALAR,
             PyTango.READ],
             {
-                'Polling period':100000,
+                'Polling period':1000000,
             } ],
         'JobFailure':
             [[PyTango.DevString,
             PyTango.SCALAR,
             PyTango.READ],
             {
-                'Polling period':100000,
+                'Polling period':1000000,
             } ],
         'jobFinished':
             [[PyTango.DevString,
             PyTango.SPECTRUM,
             PyTango.READ, 2],
             {
-                'Polling period':100000,
+                'Polling period':1000000,
             } ],
         }
 
