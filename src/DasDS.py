@@ -32,7 +32,7 @@
 
 
 import PyTango
-import sys
+import sys, time
 
 from config import DASConfig
 from ServerControl import ServerControl
@@ -64,8 +64,8 @@ class DasDS(PyTango.Device_4Impl):
     def __init__(self, cl, name):
         PyTango.Device_4Impl.__init__(self, cl, name)
         DasDS.init_device(self)
-        self._ednaClient = None
-        self._config = None
+#        self._ednaClient = None
+#        self._config = None
 
 #------------------------------------------------------------------
 #    Device destructor
@@ -82,12 +82,21 @@ class DasDS(PyTango.Device_4Impl):
         # Get configuration from Tango properties
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
+        self.set_change_event("jobSuccess", True, False)
+        self.set_change_event("jobFailure", True, False)
+        self.set_change_event("jobFinished", True, False)
         self._config = self.loadConfig()
         ServerControl.startServer(self._config.EDNA)
         ServerControl.startServer(self._config.Workflow)
-        
-        
-        
+        strDevice = str(self._config.EDNA.tangoDevice)
+        print strDevice
+        self._ednaClient = PyTango.DeviceProxy(strDevice)
+        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+
+
+
+
     def loadConfig(self):
         db = PyTango.Database()
         listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
@@ -109,7 +118,7 @@ class DasDS(PyTango.Device_4Impl):
         return config
 
 
-            
+
             #TODO: fix this
 #        strDevice = str(self._config.EDNA[0].device)
 #        print strDevice
@@ -162,8 +171,8 @@ class DasDS(PyTango.Device_4Impl):
 
         attr_JobFailure_read = "Hello Tango world"
         attr.set_value(attr_JobFailure_read)
-        
-        
+
+
 #------------------------------------------------------------------
 #    Read jobFinished attribute
 #------------------------------------------------------------------
@@ -191,14 +200,19 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def startJob(self, argin):
         print "In ", self.get_name(), "::startJob()"
-        self._config = self.loadConfig()        
-        strDevice = str(self._config.EDNA.tangoDevice)
-        print strDevice
-        self._ednaClient = PyTango.DeviceProxy(strDevice)
-        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+        #self._config = self.loadConfig()        
         print "argin = ", argin
-        argout = self._ednaClient.startJob(argin)
+        try:
+            argout = self._ednaClient.startJob(argin)
+        except PyTango.CommunicationFailed, e:
+            print "ERROR in communication! ", type(e)
+            argout = "COMMUNICATION ERROR"
+        except PyTango.DevFailed, e:
+            print "DevFailed in startJob! ", type(e)
+            argout = "DevFailed"
+        except Exception, e:
+            print "ERROR in startJob! ", type(e)
+            argout = "GENERAL ERROR"
         print "argout = ", argout
         return argout
 
@@ -254,8 +268,7 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def getJobOutput(self, argin):
         print "In ", self.get_name(), "::getJobOutput()"
-        #    Add your own code here
-        argout = "Not implemented"
+        argout = self._ednaClient.getJobOutput(argin)
         return argout
 
 
@@ -268,9 +281,10 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def jobSuccess(self, argin):
         print "In ", self.get_name(), "::jobSuccess()"
-        print argin.attr_value.value
+        print "jobId = ", argin.attr_value.value
         self.push_change_event("jobSuccess", argin.attr_value.value)
         self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
+        print "events pushed!"
 
 
 #------------------------------------------------------------------
@@ -333,24 +347,15 @@ class DasDSClass(PyTango.DeviceClass):
         'JobSuccess':
             [[PyTango.DevString,
             PyTango.SCALAR,
-            PyTango.READ],
-            {
-                'Polling period':1000000,
-            } ],
+            PyTango.READ]],
         'JobFailure':
             [[PyTango.DevString,
             PyTango.SCALAR,
-            PyTango.READ],
-            {
-                'Polling period':1000000,
-            } ],
+            PyTango.READ]],
         'jobFinished':
             [[PyTango.DevString,
             PyTango.SPECTRUM,
-            PyTango.READ, 2],
-            {
-                'Polling period':1000000,
-            } ],
+            PyTango.READ, 2]],
         }
 
 

@@ -25,8 +25,8 @@ class ServerControl(object):
             bServerIsRunning = ServerControl.checkServer(strTangoDevice)
             if not bServerIsRunning:
                 # We must try to start a server
-                strTangoHost   = _server.tangoHost
-                strServerName  = _server.tangoServerName
+                strTangoHost = _server.tangoHost
+                strServerName = _server.tangoServerName
                 # Try to start the principal server
                 ServerControl.startIndividualServer(strTangoDevice, strTangoHost, strServerName, _server.principalServer)
                 # Check if server is running
@@ -43,9 +43,9 @@ class ServerControl(object):
                 print "Server %s is up and running!" % strTangoDevice
             else:
                 raise Exception("ERROR! Could not start server %s!" % strTangoDevice)
-                    
+
     @staticmethod
-    def checkServer(_strTangoDevice, _fWaitTime=-1):
+    def checkServer(_strTangoDevice, _fWaitTime = -1):
         bServerStarted = False
         bContinue = True
         fWaitTime = float(_fWaitTime)
@@ -61,19 +61,19 @@ class ServerControl(object):
                 if fWaitTime < 0:
                     bContinue = False
                 else:
-                    print "Trying again for another %.1f seconds..." % fWaitTime
+                    print "Trying again in a second, remaining time %.1f seconds..." % fWaitTime
                     time.sleep(1)
                     fWaitTime = fWaitTime - 1
         return bServerStarted
 
-            
-            
+
+
     @staticmethod
     def startIndividualServer(_strTangoDevice, _strTangoHost, _strServerName, _serverData):
         # The server doesn't run - we try to start it
         strHost = _serverData.host
         strPathToStartScript = _serverData.startScriptPath
-        strPathToStopScript  = _serverData.stopScriptPath
+        strPathToStopScript = _serverData.stopScriptPath
         print "Trying to start DasDS server '%s' on the computer %s" % (_strServerName, strHost)
         if ServerControl.isLocalHost(strHost):
             # First run the stop server script - in case the server is stuck
