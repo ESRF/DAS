@@ -1,0 +1,7 @@
+#!/bin/ksh -f
+
+. blissrc
+
+application=${BLISSADM}'/server/src/DasDS.py '
+
+exec python ${application} $*
