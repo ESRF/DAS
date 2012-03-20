@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<DASConfig>
+  <EDNA>
+    <tangoDevice>id23eh1/edna/1</tangoDevice>
+    <tangoHost>basil:20000</tangoHost>
+    <tangoServerName>id23eh1</tangoServerName>
+    <principalServer>
+      <host>mxedna.esrf.fr</host>
+      <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
+      <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
+    </principalServer>
+    <alternativeServer>
+      <host>mx231.esrf.fr</host>
+      <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
+      <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
+    </alternativeServer>
+  </EDNA>
+</DASConfig>

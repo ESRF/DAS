@@ -48,7 +48,7 @@ class ServerControl(object):
     def checkServer(_strTangoDevice, _fWaitTime=-1):
         bServerStarted = False
         bContinue = True
-        fWaitTime = _fWaitTime
+        fWaitTime = float(_fWaitTime)
         tangoDeviceProxy = PyTango.DeviceProxy(_strTangoDevice)
         while bContinue:
             try:
@@ -61,6 +61,7 @@ class ServerControl(object):
                 if fWaitTime < 0:
                     bContinue = False
                 else:
+                    print "Trying again for another %.1f seconds..." % fWaitTime
                     time.sleep(1)
                     fWaitTime = fWaitTime - 1
         return bServerStarted

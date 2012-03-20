@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <DASConfig>
   <EDNA>
-    <tangoDevice>edna/astros/1</tangoDevice>
+    <tangoDevice>astros/edna/1</tangoDevice>
     <tangoHost>astros.esrf.fr:10000</tangoHost>
     <tangoServerName>astros</tangoServerName>
     <principalServer>

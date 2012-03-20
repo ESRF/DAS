@@ -1,16 +1,16 @@
 <?xml version="1.0" ?>
 <DASConfig>
 	<EDNA>
-	    <tangoDevice>DAU/edna/1</tangoDevice>
+	    <tangoDevice>DAU/edna/2</tangoDevice>
         <tangoHost>nela.esrf.fr:20000</tangoHost>
-        <tangoServerName>DAU1</tangoServerName>
+        <tangoServerName>DAU2</tangoServerName>
 	    <principalServer>
-		    <host>slavia.esrf.fr</host>
+		    <host>sparta.esrf.fr</host>
 		    <startScriptPath>/users/opd29/edna/bioSaxsv1/bin/edna-tango-server</startScriptPath>
 		    <stopScriptPath>/users/opd29/edna/bioSaxsv1/bin/stop-tango-server</stopScriptPath>
 		</principalServer>
 	    <alternativeServer>	
-		    <host>sparta.esrf.fr</host>
+		    <host>slavia.esrf.fr</host>
 		    <startScriptPath>/users/opd29/edna/bioSaxsv1/bin/edna-tango-server</startScriptPath>
 		    <stopScriptPath>/users/opd29/edna/bioSaxsv1/bin/stop-tango-server</stopScriptPath>
 	    </alternativeServer>
