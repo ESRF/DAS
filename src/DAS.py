@@ -2,13 +2,13 @@
 #    "$Header:  $";
 #=============================================================================
 #
-# file :        DasDS.py
+# file :        DAS.py
 #
-# description : Python source for the DasDS and its commands. 
+# description : Python source for the DAS and its commands. 
 #                The class is derived from Device. It represents the
 #                CORBA servant object which will be accessed from the
 #                network. All commands which can be executed on the
-#                DasDS are implemented in this file.
+#                DAS are implemented in this file.
 #
 # project :     TANGO Device Server
 #
@@ -38,9 +38,9 @@ from config import DASConfig
 from ServerControl import ServerControl
 
 #==================================================================
-#   DasDS Class Description:
+#   DAS Class Description:
 #
-#   <b>DasDS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
+#   <b>DAS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
 #   (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
 #
 #   <hr>
@@ -54,7 +54,7 @@ from ServerControl import ServerControl
 #==================================================================
 
 
-class DasDS(PyTango.Device_4Impl):
+class DAS(PyTango.Device_4Impl):
 
 #--------- Add you global variables here --------------------------
 
@@ -63,7 +63,7 @@ class DasDS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def __init__(self, cl, name):
         PyTango.Device_4Impl.__init__(self, cl, name)
-        DasDS.init_device(self)
+        DAS.init_device(self)
 #        self._ednaClient = None
 #        self._config = None
 
@@ -138,7 +138,7 @@ class DasDS(PyTango.Device_4Impl):
 
 #==================================================================
 #
-#    DasDS read/write attribute methods
+#    DAS read/write attribute methods
 #
 #==================================================================
 #------------------------------------------------------------------
@@ -187,7 +187,7 @@ class DasDS(PyTango.Device_4Impl):
 
 #==================================================================
 #
-#    DasDS command methods
+#    DAS command methods
 #
 #==================================================================
 
@@ -303,10 +303,10 @@ class DasDS(PyTango.Device_4Impl):
 
 #==================================================================
 #
-#    DasDSClass class definition
+#    DASClass class definition
 #
 #==================================================================
-class DasDSClass(PyTango.DeviceClass):
+class DASClass(PyTango.DeviceClass):
 
     #    Class Properties
     class_property_list = {
@@ -360,22 +360,22 @@ class DasDSClass(PyTango.DeviceClass):
 
 
 #------------------------------------------------------------------
-#    DasDSClass Constructor
+#    DASClass Constructor
 #------------------------------------------------------------------
     def __init__(self, name):
         PyTango.DeviceClass.__init__(self, name)
         self.set_type(name);
-        print "In DasDSClass  constructor"
+        print "In DASClass  constructor"
 
 #==================================================================
 #
-#    DasDS class main method
+#    DAS class main method
 #
 #==================================================================
 if __name__ == '__main__':
     try:
         py = PyTango.Util(sys.argv)
-        py.add_TgClass(DasDSClass, DasDS, 'DasDS')
+        py.add_TgClass(DASClass, DAS, 'DAS')
 
         U = PyTango.Util.instance()
         U.server_init()
