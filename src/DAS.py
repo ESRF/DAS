@@ -32,7 +32,7 @@
 
 
 import PyTango
-import sys, time
+import sys, time, threading
 
 from config import DASConfig
 from ServerControl import ServerControl
@@ -40,21 +40,26 @@ from ServerControl import ServerControl
 #==================================================================
 #   DAS Class Description:
 #
-#   <b>DAS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
-#   (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
+#         <b>DAS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
+#         (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
+#         <hr>
+#         <h2>The communication sequence UML diagram:</h2>
+#         <br><img src="Communication.png" alt="The communication sequence UML diagram"</img>
+#         <hr>
+#         <a href="../../tests/test_edna_mx.py">Sample Python client</a>
+#         <hr>
 #
-#   <hr>
-#   <h2>The communication sequence UML diagram:</h2>
-#   <br><img src="Communication.png" alt="The communication sequence UML diagram"</img>
+#==================================================================
+#     Device States Description:
 #
-#   <hr>
-#   <a href="../../tests/test_edna_mx.py">Sample Python client</a>
-#   <hr>
-#
+#   DevState.ON :
+#   DevState.FAULT :
 #==================================================================
 
 
 class DAS(PyTango.Device_4Impl):
+
+    _startServerThread = None
 
 #--------- Add you global variables here --------------------------
 
@@ -64,8 +69,6 @@ class DAS(PyTango.Device_4Impl):
     def __init__(self, cl, name):
         PyTango.Device_4Impl.__init__(self, cl, name)
         DAS.init_device(self)
-#        self._ednaClient = None
-#        self._config = None
 
 #------------------------------------------------------------------
 #    Device destructor
@@ -73,26 +76,56 @@ class DAS(PyTango.Device_4Impl):
     def delete_device(self):
         print "[Device delete_device method] for device", self.get_name()
 
+#==================================================================
+#
+#    DAS read/write attribute methods
+#
+#==================================================================
+#------------------------------------------------------------------
+#    Read Attribute Hardware
+#------------------------------------------------------------------
+    def read_attr_hardware(self, data):
+        print "In ", self.get_name(), "::read_attr_hardware()"
+
 
 #------------------------------------------------------------------
 #    Device initialization
 #------------------------------------------------------------------
     def init_device(self):
         print "In ", self.get_name(), "::init_device()"
-        # Get configuration from Tango properties
+        if DAS._startServerThread is not None:
+            print "DAS._startServerThread.is_alive() : ", DAS._startServerThread.is_alive()
+            if DAS._startServerThread.is_alive():
+                DAS._startServerThread.join()
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
         self.set_change_event("jobSuccess", True, False)
         self.set_change_event("jobFailure", True, False)
         self.set_change_event("jobFinished", True, False)
+        # Get configuration from Tango properties
         self._config = self.loadConfig()
-        ServerControl.startServer(self._config.EDNA)
-        ServerControl.startServer(self._config.Workflow)
-        strDevice = str(self._config.EDNA.tangoDevice)
-        print strDevice
-        self._ednaClient = PyTango.DeviceProxy(strDevice)
-        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+        print "DAS._startServerThread 1: ", DAS._startServerThread
+        DAS._startServerThread = threading.Thread(target = self.startRemoteServers)
+        DAS._startServerThread.start()
+        print "DAS._startServerThread 2: ", DAS._startServerThread
+
+
+
+    def startRemoteServers(self):
+        try:
+            self.set_state(PyTango.DevState.ON)
+            ServerControl.startServer(self._config.EDNA)
+            ServerControl.startServer(self._config.Workflow)
+            strEdnaDevice = str(self._config.EDNA.tangoDevice)
+            print strEdnaDevice
+            self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
+            self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+            self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+            self.set_state(PyTango.DevState.RUNNING)
+        except Exception, e:
+            # Something horrible happened!!!
+            self.set_state(PyTango.DevState.FAULT)
+            print e
 
 
 
@@ -120,69 +153,6 @@ class DAS(PyTango.Device_4Impl):
 
 
             #TODO: fix this
-#        strDevice = str(self._config.EDNA[0].device)
-#        print strDevice
-#        self._ednaClient = PyTango.DeviceProxy(strDevice)
-#        self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-#        self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-
-
-
-#------------------------------------------------------------------
-#    Always excuted hook method
-#------------------------------------------------------------------
-    def always_executed_hook(self):
-        pass
-#        print "In ", self.get_name(), "::always_excuted_hook()"
-
-
-#==================================================================
-#
-#    DAS read/write attribute methods
-#
-#==================================================================
-#------------------------------------------------------------------
-#    Read Attribute Hardware
-#------------------------------------------------------------------
-    def read_attr_hardware(self, data):
-        print "In ", self.get_name(), "::read_attr_hardware()"
-
-
-
-#------------------------------------------------------------------
-#    Read JobSuccess attribute
-#------------------------------------------------------------------
-    def read_JobSuccess(self, attr):
-        print "In ", self.get_name(), "::read_JobSuccess()"
-
-        #    Add your own code here
-
-        attr_JobSuccess_read = "Hello Tango world"
-        attr.set_value(attr_JobSuccess_read)
-
-
-#------------------------------------------------------------------
-#    Read JobFailure attribute
-#------------------------------------------------------------------
-    def read_JobFailure(self, attr):
-        print "In ", self.get_name(), "::read_JobFailure()"
-
-        #    Add your own code here
-
-        attr_JobFailure_read = "Hello Tango world"
-        attr.set_value(attr_JobFailure_read)
-
-
-#------------------------------------------------------------------
-#    Read jobFinished attribute
-#------------------------------------------------------------------
-    def read_jobFinished(self, attr):
-        print "In ", self.get_name(), "::read_jobFinished()"
-
-        #    Add your own code here
-
-        attr_jobFinished_read = ["No job launched yet", "failure"]
-        attr.set_value(attr_jobFinished_read)
 
 
 #==================================================================
@@ -194,8 +164,8 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
 #    startJob command:
 #
-#    Description:  
-#    argin:  DevVarStringArray    [<Job to execute>,<XML input for job>]
+#    Description: 
+#    argin:  DevVarStringArray    [<Module to execute>,<XML input>]
 #    argout: DevString    job id
 #------------------------------------------------------------------
     def startJob(self, argin):
@@ -217,6 +187,80 @@ class DAS(PyTango.Device_4Impl):
         return argout
 
 
+
+#------------------------------------------------------------------
+#    Read JobSuccess attribute
+#------------------------------------------------------------------
+    def read_JobSuccess(self, attr):
+        print "In ", self.get_name(), "::read_JobSuccess()"
+
+        #    Add your own code here
+
+        attr_JobSuccess_read = "Hello Tango world"
+        attr.set_value(attr_JobSuccess_read)
+
+
+#---- JobSuccess attribute State Machine -----------------
+    def is_JobSuccess_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    Read JobFailure attribute
+#------------------------------------------------------------------
+    def read_JobFailure(self, attr):
+        print "In ", self.get_name(), "::read_JobFailure()"
+
+        #    Add your own code here
+
+        attr_JobFailure_read = "Hello Tango world"
+        attr.set_value(attr_JobFailure_read)
+
+
+#---- JobFailure attribute State Machine -----------------
+    def is_JobFailure_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    Read jobFinished attribute
+#------------------------------------------------------------------
+    def read_jobFinished(self, attr):
+        print "In ", self.get_name(), "::read_jobFinished()"
+
+        #    Add your own code here
+
+        attr_jobFinished_read = ["No job launched yet", "failure"]
+        attr.set_value(attr_jobFinished_read)
+
+
+#---- jobFinished attribute State Machine -----------------
+    def is_jobFinished_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+
+#---- startJob command State Machine -----------------
+    def is_startJob_allowed(self):
+        if self.get_state() in [PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
 #------------------------------------------------------------------
 #    abort command:
 #
@@ -229,6 +273,15 @@ class DAS(PyTango.Device_4Impl):
         #    Add your own code here
         argout = False
         return argout
+
+
+#---- abort command State Machine -----------------
+    def is_abort_allowed(self):
+        if self.get_state() in [PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
 
 
 #------------------------------------------------------------------
@@ -245,6 +298,15 @@ class DAS(PyTango.Device_4Impl):
         return argout
 
 
+#---- getJobState command State Machine -----------------
+    def is_getJobState_allowed(self):
+        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
 #------------------------------------------------------------------
 #    initPlugin command:
 #
@@ -259,6 +321,15 @@ class DAS(PyTango.Device_4Impl):
         return argout
 
 
+#---- initPlugin command State Machine -----------------
+    def is_initPlugin_allowed(self):
+        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
 #------------------------------------------------------------------
 #    getJobOutput command:
 #
@@ -270,6 +341,15 @@ class DAS(PyTango.Device_4Impl):
         print "In ", self.get_name(), "::getJobOutput()"
         argout = self._ednaClient.getJobOutput(argin)
         return argout
+
+
+#---- getJobOutput command State Machine -----------------
+    def is_getJobOutput_allowed(self):
+        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
 
 
 #------------------------------------------------------------------
@@ -344,11 +424,11 @@ class DASClass(PyTango.DeviceClass):
 
     #    Attribute definitions
     attr_list = {
-        'JobSuccess':
+        'jobSuccess':
             [[PyTango.DevString,
             PyTango.SCALAR,
             PyTango.READ]],
-        'JobFailure':
+        'jobFailure':
             [[PyTango.DevString,
             PyTango.SCALAR,
             PyTango.READ]],

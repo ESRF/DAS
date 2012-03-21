@@ -7,13 +7,15 @@ if len(sys.argv) < 2:
 
 def jobFinished(event):
     print "Job finished!", event.attr_value.value
-    jobFinishedId, status = event.attr_value.value
-    if status == "success":
-        print dev.getJobOutput(jobFinishedId)
+    if event.attr_value.value is not None:
+        jobFinishedId, status = event.attr_value.value
+        if status == "success":
+            print dev.getJobOutput(jobFinishedId)
 
 def success(event):
     print "SUCCESS!", event.attr_value.value
-    print dev.getJobOutput(event.attr_value.value)
+    if event.attr_value.value is not None:
+        print dev.getJobOutput(event.attr_value.value)
 
 def failure(event):
     print "FAILURE!", event.attr_value.value

@@ -5,12 +5,12 @@
     <tangoHost>basil:20000</tangoHost>
     <tangoServerName>id23eh1</tangoServerName>
     <principalServer>
-      <host>mxedna.esrf.fr</host>
+      <host>slavia.esrf.fr</host>
       <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
       <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
     </principalServer>
     <alternativeServer>
-      <host>mx231.esrf.fr</host>
+      <host>sparta.esrf.fr</host>
       <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
       <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
     </alternativeServer>

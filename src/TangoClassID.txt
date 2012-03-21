@@ -1,7 +1,7 @@
 /**
  * Device Class Identification:
  * 
- * Class Name   :	DasDS
+ * Class Name   :	DAS
  * Contact      :	ohlsson,svensson@esrf.fr
  * Class Family :	Miscellaneous
  * Platform     :	Linux
