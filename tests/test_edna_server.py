@@ -1,5 +1,9 @@
 import PyTango
-import time
+import time, sys, os
+
+if len(sys.argv) < 2:
+    print "Usage: %s edna-tango-device-name" % os.path.basename(sys.argv[0])
+    sys.exit(1)
 
 def jobFinished(event):
     print "Job finished!", event.attr_value.value
@@ -15,8 +19,7 @@ def failure(event):
     print "FAILURE!", event.attr_value.value
 
 
-dev = PyTango.DeviceProxy("DAS/mx/1")
-#dev = PyTango.DeviceProxy("linsvensson/edna/1")
+dev = PyTango.DeviceProxy(sys.argv[1])
 dev.subscribe_event("jobFinished", PyTango.EventType.CHANGE_EVENT, jobFinished, [])
 dev.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, success, [])
 dev.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, failure, [])
