@@ -59,7 +59,8 @@ from ServerControl import ServerControl
 
 class DAS(PyTango.Device_4Impl):
 
-    _startServerThread = None
+    _startEdnaServerThread = None
+    _startWorkflowServerThread = None
 
 #--------- Add you global variables here --------------------------
 
@@ -92,11 +93,16 @@ class DAS(PyTango.Device_4Impl):
 #    Device initialization
 #------------------------------------------------------------------
     def init_device(self):
+        self.set_state(PyTango.DevState.ON)
         print "In ", self.get_name(), "::init_device()"
-        if DAS._startServerThread is not None:
-            print "DAS._startServerThread.is_alive() : ", DAS._startServerThread.is_alive()
-            if DAS._startServerThread.is_alive():
-                DAS._startServerThread.join()
+        if DAS._startEdnaServerThread is not None:
+            print "DAS._startEdnaServerThread.is_alive() : ", DAS._startEdnaServerThread.is_alive()
+            if DAS._startEdnaServerThread.is_alive():
+                DAS._startEdnaServerThread.join()
+        if DAS._startWorkflowServerThread is not None:
+            print "DAS._startWorkflowServerThread.is_alive() : ", DAS._startWorkflowServerThread.is_alive()
+            if DAS._startWorkflowServerThread.is_alive():
+                DAS._startWorkflowServerThread.join()
         self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
         self.set_change_event("jobSuccess", True, False)
@@ -104,29 +110,47 @@ class DAS(PyTango.Device_4Impl):
         self.set_change_event("jobFinished", True, False)
         # Get configuration from Tango properties
         self._config = self.loadConfig()
-        print "DAS._startServerThread 1: ", DAS._startServerThread
-        DAS._startServerThread = threading.Thread(target = self.startRemoteServers)
-        DAS._startServerThread.start()
-        print "DAS._startServerThread 2: ", DAS._startServerThread
+        print "DAS._startEdnaServerThread 1: ", DAS._startEdnaServerThread
+        DAS._startEdnaServerThread = threading.Thread(target = self.startRemoteEdnaServer)
+        DAS._startEdnaServerThread.start()
+        print "DAS._startEdnaServerThread 2: ", DAS._startEdnaServerThread
+        if self._config.Workflow is None:
+            self.set_state(PyTango.DevState.RUNNING)
+        else:
+            print "DAS._startWorkflowServerThread 1: ", DAS._startWorkflowServerThread
+            DAS._startWorkflowServerThread = threading.Thread(target = self.startRemoteEdnaServer)
+            DAS._startWorkflowServerThread.start()
+            print "DAS._startWorkflowServerThread 2: ", DAS._startWorkflowServerThread
+            self.set_state(PyTango.DevState.RUNNING)
 
 
 
-    def startRemoteServers(self):
+    def startRemoteEdnaServer(self):
         try:
-            self.set_state(PyTango.DevState.ON)
             ServerControl.startServer(self._config.EDNA)
-            ServerControl.startServer(self._config.Workflow)
             strEdnaDevice = str(self._config.EDNA.tangoDevice)
             print strEdnaDevice
             self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
             self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
             self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-            self.set_state(PyTango.DevState.RUNNING)
         except Exception, e:
             # Something horrible happened!!!
             self.set_state(PyTango.DevState.FAULT)
             print e
 
+
+    def startRemoteWorkflowServer(self):
+        try:
+            ServerControl.startServer(self._config.Workflow)
+            strWorkflowDevice = str(self._config.Workflow.tangoDevice)
+            print strWorkflowDevice
+            self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
+            self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+            self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+        except Exception, e:
+            # Something horrible happened!!!
+            self.set_state(PyTango.DevState.FAULT)
+            print e
 
 
 

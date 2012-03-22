@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="idModel" name="State Machine Model">
+  <packagedElement xmi:type="uml:Package" xmi:id="idPackage" name="State Machine Package">
+    <packagedElement xmi:type="uml:StateMachine" xmi:id="idStateMachine" name="DAS">
+      <region xmi:id="idRegion" name="MainRegion">
+        <subvertex xmi:type="uml:State" xmi:id="_x3yi0HQtEeGtg6-t70GZwg" name="ON"/>
+        <subvertex xmi:type="uml:State" xmi:id="_0ZGB8HQtEeGtg6-t70GZwg" name="RUNNING"/>
+        <subvertex xmi:type="uml:State" xmi:id="_3Z45cHQtEeGtg6-t70GZwg" name="FAULT"/>
+        <transition xmi:id="_7qNfIHQtEeGtg6-t70GZwg" name="If declared EDNA and Workflow servers are up and running" kind="local" source="_x3yi0HQtEeGtg6-t70GZwg" target="_0ZGB8HQtEeGtg6-t70GZwg"/>
+        <transition xmi:id="_8hP01HQtEeGtg6-t70GZwg" name="" kind="local" source="_0ZGB8HQtEeGtg6-t70GZwg" target="_3Z45cHQtEeGtg6-t70GZwg"/>
+        <transition xmi:id="__XdXhXQuEeGaiN-oGA6d0g" name="If declared EDNA or Workflow server is down" kind="local" source="_0ZGB8HQtEeGtg6-t70GZwg" target="_x3yi0HQtEeGtg6-t70GZwg"/>
+        <transition xmi:id="_O2kJ0HQvEeGaiN-oGA6d0g" name="Cannot start declared EDNA or Workflow server" kind="local" source="_x3yi0HQtEeGtg6-t70GZwg" target="_3Z45cHQtEeGtg6-t70GZwg"/>
+      </region>
+    </packagedElement>
+  </packagedElement>
+</uml:Model>
