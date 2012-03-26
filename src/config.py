@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Generated Mon Mar 19 07:43::28 2012 by EDGenerateDS.
+# Generated Mon Mar 26 02:25::47 2012 by EDGenerateDS.
 #
 
 import os, sys
@@ -43,9 +43,8 @@ def checkType(_strClassName, _strMethodName, _value, _strExpectedType):
 
 
 def warnEmptyAttribute(_strName, _strTypeName):
-	pass
-	#if not _strTypeName in ["float", "double", "string", "boolean", "integer"]:
-	#		print("Warning! Non-optional attribute %s of type %s is None!" % (_strName, _strTypeName))
+	if not _strTypeName in ["float", "double", "string", "boolean", "integer"]:
+		print("Warning! Non-optional attribute %s of type %s is None!" % (_strName, _strTypeName))
 
 class MixedContainer(object):
 	# Constants for category:
@@ -100,23 +99,43 @@ class MixedContainer(object):
 
 
 class DASConfig(object):
-	def __init__(self, Workflow=None, EDNA=None):
+	def __init__(self, Workflow=None, EDNA=None, pollingTime=None, contactEmail=None):
+	
+	
+		checkType("DASConfig", "Constructor of DASConfig", contactEmail, "string")
+		self._contactEmail = contactEmail
+		checkType("DASConfig", "Constructor of DASConfig", pollingTime, "float")
+		self._pollingTime = pollingTime
 		checkType("DASConfig", "Constructor of DASConfig", EDNA, "Server")
-		self.__EDNA = EDNA
+		self._EDNA = EDNA
 		checkType("DASConfig", "Constructor of DASConfig", Workflow, "Server")
-		self.__Workflow = Workflow
-	def getEDNA(self): return self.__EDNA
+		self._Workflow = Workflow
+	def getContactEmail(self): return self._contactEmail
+	def setContactEmail(self, contactEmail):
+		checkType("DASConfig", "setContactEmail", contactEmail, "string")
+		self._contactEmail = contactEmail
+	def delContactEmail(self): self._contactEmail = None
+	# Properties
+	contactEmail = property(getContactEmail, setContactEmail, delContactEmail, "Property for contactEmail")
+	def getPollingTime(self): return self._pollingTime
+	def setPollingTime(self, pollingTime):
+		checkType("DASConfig", "setPollingTime", pollingTime, "float")
+		self._pollingTime = pollingTime
+	def delPollingTime(self): self._pollingTime = None
+	# Properties
+	pollingTime = property(getPollingTime, setPollingTime, delPollingTime, "Property for pollingTime")
+	def getEDNA(self): return self._EDNA
 	def setEDNA(self, EDNA):
 		checkType("DASConfig", "setEDNA", EDNA, "Server")
-		self.__EDNA = EDNA
-	def delEDNA(self): self.__EDNA = None
+		self._EDNA = EDNA
+	def delEDNA(self): self._EDNA = None
 	# Properties
 	EDNA = property(getEDNA, setEDNA, delEDNA, "Property for EDNA")
-	def getWorkflow(self): return self.__Workflow
+	def getWorkflow(self): return self._Workflow
 	def setWorkflow(self, Workflow):
 		checkType("DASConfig", "setWorkflow", Workflow, "Server")
-		self.__Workflow = Workflow
-	def delWorkflow(self): self.__Workflow = None
+		self._Workflow = Workflow
+	def delWorkflow(self): self._Workflow = None
 	# Properties
 	Workflow = property(getWorkflow, setWorkflow, delWorkflow, "Property for Workflow")
 	def export(self, outfile, level, name_='DASConfig'):
@@ -127,11 +146,17 @@ class DASConfig(object):
 		outfile.write(unicode('</%s>\n' % name_))
 	def exportChildren(self, outfile, level, name_='DASConfig'):
 		pass
-		if self.__EDNA is not None:
+		if self._contactEmail is not None:
+			showIndent(outfile, level)
+			outfile.write(unicode('<contactEmail>%s</contactEmail>\n' % self._contactEmail))
+		if self._pollingTime is not None:
+			showIndent(outfile, level)
+			outfile.write(unicode('<pollingTime>%e</pollingTime>\n' % self._pollingTime))
+		if self._EDNA is not None:
 			self.EDNA.export(outfile, level, name_='EDNA')
 		else:
 			warnEmptyAttribute("EDNA", "Server")
-		if self.__Workflow is not None:
+		if self._Workflow is not None:
 			self.Workflow.export(outfile, level, name_='Workflow')
 	def build(self, node_):
 		for child_ in node_.childNodes:
@@ -139,6 +164,22 @@ class DASConfig(object):
 			self.buildChildren(child_, nodeName_)
 	def buildChildren(self, child_, nodeName_):
 		if child_.nodeType == Node.ELEMENT_NODE and \
+			nodeName_ == 'contactEmail':
+			value_ = ''
+			for text__content_ in child_.childNodes:
+				if text__content_.nodeValue is not None:
+					value_ += text__content_.nodeValue
+			self._contactEmail = value_
+		elif child_.nodeType == Node.ELEMENT_NODE and \
+			nodeName_ == 'pollingTime':
+			if child_.firstChild:
+				sval_ = child_.firstChild.nodeValue
+				try:
+					fval_ = float(sval_)
+				except ValueError:
+					raise ValueError('requires float (or double) -- %s' % child_.toxml())
+				self._pollingTime = fval_
+		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'EDNA':
 			obj_ = Server()
 			obj_.build(child_)
@@ -193,31 +234,33 @@ class DASConfig(object):
 
 class ServerData(object):
 	def __init__(self, stopScriptPath=None, startScriptPath=None, host=None):
+	
+	
 		checkType("ServerData", "Constructor of ServerData", host, "string")
-		self.__host = host
+		self._host = host
 		checkType("ServerData", "Constructor of ServerData", startScriptPath, "string")
-		self.__startScriptPath = startScriptPath
+		self._startScriptPath = startScriptPath
 		checkType("ServerData", "Constructor of ServerData", stopScriptPath, "string")
-		self.__stopScriptPath = stopScriptPath
-	def getHost(self): return self.__host
+		self._stopScriptPath = stopScriptPath
+	def getHost(self): return self._host
 	def setHost(self, host):
 		checkType("ServerData", "setHost", host, "string")
-		self.__host = host
-	def delHost(self): self.__host = None
+		self._host = host
+	def delHost(self): self._host = None
 	# Properties
 	host = property(getHost, setHost, delHost, "Property for host")
-	def getStartScriptPath(self): return self.__startScriptPath
+	def getStartScriptPath(self): return self._startScriptPath
 	def setStartScriptPath(self, startScriptPath):
 		checkType("ServerData", "setStartScriptPath", startScriptPath, "string")
-		self.__startScriptPath = startScriptPath
-	def delStartScriptPath(self): self.__startScriptPath = None
+		self._startScriptPath = startScriptPath
+	def delStartScriptPath(self): self._startScriptPath = None
 	# Properties
 	startScriptPath = property(getStartScriptPath, setStartScriptPath, delStartScriptPath, "Property for startScriptPath")
-	def getStopScriptPath(self): return self.__stopScriptPath
+	def getStopScriptPath(self): return self._stopScriptPath
 	def setStopScriptPath(self, stopScriptPath):
 		checkType("ServerData", "setStopScriptPath", stopScriptPath, "string")
-		self.__stopScriptPath = stopScriptPath
-	def delStopScriptPath(self): self.__stopScriptPath = None
+		self._stopScriptPath = stopScriptPath
+	def delStopScriptPath(self): self._stopScriptPath = None
 	# Properties
 	stopScriptPath = property(getStopScriptPath, setStopScriptPath, delStopScriptPath, "Property for stopScriptPath")
 	def export(self, outfile, level, name_='ServerData'):
@@ -228,19 +271,19 @@ class ServerData(object):
 		outfile.write(unicode('</%s>\n' % name_))
 	def exportChildren(self, outfile, level, name_='ServerData'):
 		pass
-		if self.__host is not None:
+		if self._host is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<host>%s</host>\n' % self.__host))
+			outfile.write(unicode('<host>%s</host>\n' % self._host))
 		else:
 			warnEmptyAttribute("host", "string")
-		if self.__startScriptPath is not None:
+		if self._startScriptPath is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<startScriptPath>%s</startScriptPath>\n' % self.__startScriptPath))
+			outfile.write(unicode('<startScriptPath>%s</startScriptPath>\n' % self._startScriptPath))
 		else:
 			warnEmptyAttribute("startScriptPath", "string")
-		if self.__stopScriptPath is not None:
+		if self._stopScriptPath is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<stopScriptPath>%s</stopScriptPath>\n' % self.__stopScriptPath))
+			outfile.write(unicode('<stopScriptPath>%s</stopScriptPath>\n' % self._stopScriptPath))
 		else:
 			warnEmptyAttribute("stopScriptPath", "string")
 	def build(self, node_):
@@ -254,21 +297,21 @@ class ServerData(object):
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__host = value_
+			self._host = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'startScriptPath':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__startScriptPath = value_
+			self._startScriptPath = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'stopScriptPath':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__stopScriptPath = value_
+			self._stopScriptPath = value_
 	#Method for marshalling an object
 	def marshal( self ):
 		oStreamString = StringIO()
@@ -314,60 +357,62 @@ class ServerData(object):
 
 class Server(object):
 	def __init__(self, alternativeServer=None, principalServer=None, tangoServerName=None, tangoHost=None, tangoDevice=None):
+	
+	
 		checkType("Server", "Constructor of Server", tangoDevice, "string")
-		self.__tangoDevice = tangoDevice
+		self._tangoDevice = tangoDevice
 		checkType("Server", "Constructor of Server", tangoHost, "string")
-		self.__tangoHost = tangoHost
+		self._tangoHost = tangoHost
 		checkType("Server", "Constructor of Server", tangoServerName, "string")
-		self.__tangoServerName = tangoServerName
+		self._tangoServerName = tangoServerName
 		checkType("Server", "Constructor of Server", principalServer, "ServerData")
-		self.__principalServer = principalServer
+		self._principalServer = principalServer
 		if alternativeServer is None:
-			self.__alternativeServer = []
+			self._alternativeServer = []
 		else:
 			checkType("Server", "Constructor of Server", alternativeServer, "list")
-			self.__alternativeServer = alternativeServer
-	def getTangoDevice(self): return self.__tangoDevice
+			self._alternativeServer = alternativeServer
+	def getTangoDevice(self): return self._tangoDevice
 	def setTangoDevice(self, tangoDevice):
 		checkType("Server", "setTangoDevice", tangoDevice, "string")
-		self.__tangoDevice = tangoDevice
-	def delTangoDevice(self): self.__tangoDevice = None
+		self._tangoDevice = tangoDevice
+	def delTangoDevice(self): self._tangoDevice = None
 	# Properties
 	tangoDevice = property(getTangoDevice, setTangoDevice, delTangoDevice, "Property for tangoDevice")
-	def getTangoHost(self): return self.__tangoHost
+	def getTangoHost(self): return self._tangoHost
 	def setTangoHost(self, tangoHost):
 		checkType("Server", "setTangoHost", tangoHost, "string")
-		self.__tangoHost = tangoHost
-	def delTangoHost(self): self.__tangoHost = None
+		self._tangoHost = tangoHost
+	def delTangoHost(self): self._tangoHost = None
 	# Properties
 	tangoHost = property(getTangoHost, setTangoHost, delTangoHost, "Property for tangoHost")
-	def getTangoServerName(self): return self.__tangoServerName
+	def getTangoServerName(self): return self._tangoServerName
 	def setTangoServerName(self, tangoServerName):
 		checkType("Server", "setTangoServerName", tangoServerName, "string")
-		self.__tangoServerName = tangoServerName
-	def delTangoServerName(self): self.__tangoServerName = None
+		self._tangoServerName = tangoServerName
+	def delTangoServerName(self): self._tangoServerName = None
 	# Properties
 	tangoServerName = property(getTangoServerName, setTangoServerName, delTangoServerName, "Property for tangoServerName")
-	def getPrincipalServer(self): return self.__principalServer
+	def getPrincipalServer(self): return self._principalServer
 	def setPrincipalServer(self, principalServer):
 		checkType("Server", "setPrincipalServer", principalServer, "ServerData")
-		self.__principalServer = principalServer
-	def delPrincipalServer(self): self.__principalServer = None
+		self._principalServer = principalServer
+	def delPrincipalServer(self): self._principalServer = None
 	# Properties
 	principalServer = property(getPrincipalServer, setPrincipalServer, delPrincipalServer, "Property for principalServer")
-	def getAlternativeServer(self): return self.__alternativeServer
+	def getAlternativeServer(self): return self._alternativeServer
 	def setAlternativeServer(self, alternativeServer):
 		checkType("Server", "setAlternativeServer", alternativeServer, "list")
-		self.__alternativeServer = alternativeServer
-	def delAlternativeServer(self): self.__alternativeServer = None
+		self._alternativeServer = alternativeServer
+	def delAlternativeServer(self): self._alternativeServer = None
 	# Properties
 	alternativeServer = property(getAlternativeServer, setAlternativeServer, delAlternativeServer, "Property for alternativeServer")
 	def addAlternativeServer(self, value):
 		checkType("Server", "setAlternativeServer", value, "ServerData")
-		self.__alternativeServer.append(value)
+		self._alternativeServer.append(value)
 	def insertAlternativeServer(self, index, value):
 		checkType("Server", "setAlternativeServer", value, "ServerData")
-		self.__alternativeServer[index] = value
+		self._alternativeServer[index] = value
 	def export(self, outfile, level, name_='Server'):
 		showIndent(outfile, level)
 		outfile.write(unicode('<%s>\n' % name_))
@@ -376,22 +421,22 @@ class Server(object):
 		outfile.write(unicode('</%s>\n' % name_))
 	def exportChildren(self, outfile, level, name_='Server'):
 		pass
-		if self.__tangoDevice is not None:
+		if self._tangoDevice is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<tangoDevice>%s</tangoDevice>\n' % self.__tangoDevice))
+			outfile.write(unicode('<tangoDevice>%s</tangoDevice>\n' % self._tangoDevice))
 		else:
 			warnEmptyAttribute("tangoDevice", "string")
-		if self.__tangoHost is not None:
+		if self._tangoHost is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<tangoHost>%s</tangoHost>\n' % self.__tangoHost))
+			outfile.write(unicode('<tangoHost>%s</tangoHost>\n' % self._tangoHost))
 		else:
 			warnEmptyAttribute("tangoHost", "string")
-		if self.__tangoServerName is not None:
+		if self._tangoServerName is not None:
 			showIndent(outfile, level)
-			outfile.write(unicode('<tangoServerName>%s</tangoServerName>\n' % self.__tangoServerName))
+			outfile.write(unicode('<tangoServerName>%s</tangoServerName>\n' % self._tangoServerName))
 		else:
 			warnEmptyAttribute("tangoServerName", "string")
-		if self.__principalServer is not None:
+		if self._principalServer is not None:
 			self.principalServer.export(outfile, level, name_='principalServer')
 		else:
 			warnEmptyAttribute("principalServer", "ServerData")
@@ -408,21 +453,21 @@ class Server(object):
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__tangoDevice = value_
+			self._tangoDevice = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'tangoHost':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__tangoHost = value_
+			self._tangoHost = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'tangoServerName':
 			value_ = ''
 			for text__content_ in child_.childNodes:
 				if text__content_.nodeValue is not None:
 					value_ += text__content_.nodeValue
-			self.__tangoServerName = value_
+			self._tangoServerName = value_
 		elif child_.nodeType == Node.ELEMENT_NODE and \
 			nodeName_ == 'principalServer':
 			obj_ = ServerData()

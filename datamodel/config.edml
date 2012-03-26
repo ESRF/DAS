@@ -16,6 +16,8 @@ complex type ServerData {
 }
 
 complex type DASConfig {
+    contactEmail : string optional
+    pollingTime : float optional
     EDNA : Server
     Workflow : Server optional
 }

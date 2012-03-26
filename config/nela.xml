@@ -1,18 +1,23 @@
 <?xml version="1.0" ?>
 <DASConfig>
+	<contactEmail>ohlsson@esrf.fr</contactEmail>
 	<EDNA>
 		<tangoDevice>mx/edna/1</tangoDevice>
 		<tangoHost>nela.esrf.fr:20000</tangoHost>
 		<tangoServerName>mx</tangoServerName>
 		<principalServer>
 			<host>sparta.esrf.fr</host>
-			<startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
-			<stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
+			<startScriptPath>/opt/pxsoft/bin/edna-tango-server-start
+			</startScriptPath>
+			<stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop
+			</stopScriptPath>
 		</principalServer>
 		<alternativeServer>
 			<host>slavia.esrf.fr</host>
-			<startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
-			<stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
+			<startScriptPath>/opt/pxsoft/bin/edna-tango-server-start
+			</startScriptPath>
+			<stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop
+			</stopScriptPath>
 		</alternativeServer>
 	</EDNA>
 </DASConfig>
