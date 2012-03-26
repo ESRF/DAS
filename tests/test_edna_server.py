@@ -34,8 +34,11 @@ strXML = """<?xml version="1.0" ?>
 </XSDataString>"""
 
 #strEdnaPlugin = "EDPluginControlInterfaceToMXCuBEv1_3"
-strEdnaPlugin = "EDPluginTestPluginFactory"
-jobId = dev.command_inout("startJob", [strEdnaPlugin, strXML])
-print "Started job: ", jobId
+strEdnaPlugin = "EDPluginTestPluginFactory1"
+try:
+  jobId = dev.command_inout("startJob", [strEdnaPlugin, strXML])
+  print "Started job: ", jobId
+except Exception, e:
+    print "Error! ", e
 
 time.sleep(1)
