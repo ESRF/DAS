@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <diagrams:Diagrams xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.topcased.org/DI/1.0" xmlns:diagrams="http://www.topcased.org/Diagrams/1.0" xmi:id="_UVbRIXQtEeGtg6-t70GZwg" activeDiagram="_UVbRInQtEeGtg6-t70GZwg">
   <model href="StateMachine.uml#idStateMachine"/>
-  <diagrams xmi:id="_UVbRInQtEeGtg6-t70GZwg" position="0,0" size="789,278" name="DAS" viewport="0,0">
+  <diagrams xmi:id="_UVbRInQtEeGtg6-t70GZwg" position="0,0" size="833,278" name="DAS" viewport="-1,0">
     <property xmi:id="_UWrOUHQtEeGtg6-t70GZwg" key="pageFormatName" value=""/>
-    <property xmi:id="_UWrOUXQtEeGtg6-t70GZwg" key="diagramWidth" value="798"/>
-    <property xmi:id="_UWrOUnQtEeGtg6-t70GZwg" key="diagramHeight" value="307"/>
+    <property xmi:id="_UWrOUXQtEeGtg6-t70GZwg" key="diagramWidth" value="842"/>
+    <property xmi:id="_UWrOUnQtEeGtg6-t70GZwg" key="diagramHeight" value="306"/>
     <property xmi:id="_UWrOU3QtEeGtg6-t70GZwg" key="pageMarginName" value="A4"/>
     <property xmi:id="_UWrOVHQtEeGtg6-t70GZwg" key="diagramTopMargin" value="0"/>
     <property xmi:id="_UWrOVXQtEeGtg6-t70GZwg" key="diagramBottomMargin" value="0"/>
@@ -14,23 +14,23 @@
     <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_UVb4MHQtEeGtg6-t70GZwg" presentation="org.topcased.modeler.uml.statemachinediagram">
       <element href="StateMachine.uml#idStateMachine"/>
     </semanticModel>
-    <contained xsi:type="di:GraphNode" xmi:id="_UVb4MXQtEeGtg6-t70GZwg" position="0,0" size="787,276">
+    <contained xsi:type="di:GraphNode" xmi:id="_UVb4MXQtEeGtg6-t70GZwg" position="0,0" size="831,276">
       <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_UVb4MnQtEeGtg6-t70GZwg" presentation="default">
         <element href="StateMachine.uml#idRegion"/>
       </semanticModel>
-      <contained xsi:type="di:GraphNode" xmi:id="_x3ZhQHQtEeGtg6-t70GZwg" position="362,41" size="50,50">
+      <contained xsi:type="di:GraphNode" xmi:id="_x3ZhQHQtEeGtg6-t70GZwg" position="383,41" size="50,50">
         <anchorage xmi:id="_7qJ0wHQtEeGtg6-t70GZwg" graphEdge="_7qM4EHQtEeGtg6-t70GZwg __XdXgXQuEeGaiN-oGA6d0g _O2jiwHQvEeGaiN-oGA6d0g"/>
         <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_x3ZhQXQtEeGtg6-t70GZwg" presentation="default">
           <element href="StateMachine.uml#_x3yi0HQtEeGtg6-t70GZwg"/>
         </semanticModel>
       </contained>
-      <contained xsi:type="di:GraphNode" xmi:id="_0ZEMwHQtEeGtg6-t70GZwg" position="335,216" size="105,50">
+      <contained xsi:type="di:GraphNode" xmi:id="_0ZEMwHQtEeGtg6-t70GZwg" position="356,216" size="105,50">
         <anchorage xmi:id="_7qKb0HQtEeGtg6-t70GZwg" graphEdge="_7qM4EHQtEeGtg6-t70GZwg __XdXgXQuEeGaiN-oGA6d0g"/>
         <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_0ZEMwXQtEeGtg6-t70GZwg" presentation="default">
           <element href="StateMachine.uml#_0ZGB8HQtEeGtg6-t70GZwg"/>
         </semanticModel>
       </contained>
-      <contained xsi:type="di:GraphNode" xmi:id="_3Z3EQHQtEeGtg6-t70GZwg" position="727,40" size="50,50">
+      <contained xsi:type="di:GraphNode" xmi:id="_3Z3EQHQtEeGtg6-t70GZwg" position="771,42" size="50,50">
         <anchorage xmi:id="_O2i7sHQvEeGaiN-oGA6d0g" graphEdge="_O2jiwHQvEeGaiN-oGA6d0g"/>
         <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_3Z3EQXQtEeGtg6-t70GZwg" presentation="default">
           <element href="StateMachine.uml#_3Z45cHQtEeGtg6-t70GZwg"/>
@@ -40,7 +40,7 @@
         <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="_7qM4EXQtEeGtg6-t70GZwg" presentation="default">
           <element href="StateMachine.uml#_7qNfIHQtEeGtg6-t70GZwg"/>
         </semanticModel>
-        <contained xsi:type="di:EdgeObjectOffset" xmi:id="_7qM4EnQtEeGtg6-t70GZwg" id="nameEdgeObject" offset="-183,-2"/>
+        <contained xsi:type="di:EdgeObjectOffset" xmi:id="_7qM4EnQtEeGtg6-t70GZwg" id="nameEdgeObject" offset="-190,0"/>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="_7qM4E3QtEeGtg6-t70GZwg" visible="false" id="TransitionStereotypeEdgeObject"/>
         <waypoints>[-21, 62, -26, -60]</waypoints>
       </contained>
@@ -48,7 +48,7 @@
         <semanticModel xsi:type="di:EMFSemanticModelBridge" xmi:id="__XdXgnQuEeGaiN-oGA6d0g" presentation="default">
           <element href="StateMachine.uml#__XdXhXQuEeGaiN-oGA6d0g"/>
         </semanticModel>
-        <contained xsi:type="di:EdgeObjectOffset" xmi:id="__XdXg3QuEeGaiN-oGA6d0g" id="nameEdgeObject" offset="144,1"/>
+        <contained xsi:type="di:EdgeObjectOffset" xmi:id="__XdXg3QuEeGaiN-oGA6d0g" id="nameEdgeObject" offset="155,0"/>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="__XdXhHQuEeGaiN-oGA6d0g" visible="false" id="TransitionStereotypeEdgeObject"/>
         <waypoints>[25, -60, 30, 62]</waypoints>
       </contained>
