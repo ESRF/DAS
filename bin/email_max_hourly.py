@@ -2,9 +2,8 @@
 #   
 import os, sys, getopt, re
 import time
-from datetime import date, datetime, timedelta
 
-def help():
+def usage():
     print "\nUsage:"
     print "email_max_hourly.py -p project -e emails_separated_by_,"
     print "\nReads message on stdin\n"
@@ -54,21 +53,21 @@ try:
             email = val
 except getopt.GetoptError:
     print >> sys.stderr, "\nSyntax error"
-    help()
+    usage()
     sys.exit()
 
 # check some syntax
 if email == re.sub('@', '', email):
     print >> sys.stderr, "\ne-mail without @"
-    help()
+    usage()
     sys.exit(-1)
 if project != re.sub(r'\s', '', project):
     print >> sys.stderr, "project can not have spaces in it"
-    help()
+    usage()
     sys.exit(-1)
 if len(args) != 0:
     print >> sys.stderr, "\nsome extra entries without -p or -e"
-    help()
+    usage()
     sys.exit(-1)
 
 # time stamp for last sent e-mail
