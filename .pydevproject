@@ -7,5 +7,6 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/DAS/src</path>
 <path>/DAS/tests</path>
+<path>/DAS/bin</path>
 </pydev_pathproperty>
 </pydev_project>
