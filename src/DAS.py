@@ -35,7 +35,7 @@ import PyTango
 import sys, time, threading
 
 from config import DASConfig
-from ServerControl import ServerControl
+from DASStateMachine import DASStateMachine
 
 #==================================================================
 #   DAS Class Description:
@@ -76,6 +76,7 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def delete_device(self):
         print "[Device delete_device method] for device", self.get_name()
+        self._dasStateMachine.stop()
 
 #==================================================================
 #
@@ -93,66 +94,33 @@ class DAS(PyTango.Device_4Impl):
 #    Device initialization
 #------------------------------------------------------------------
     def init_device(self):
-        self.set_state(PyTango.DevState.ON)
-        print "In ", self.get_name(), "::init_device()"
-        if DAS._startEdnaServerThread is not None:
-            print "DAS._startEdnaServerThread.is_alive() : ", DAS._startEdnaServerThread.is_alive()
-            if DAS._startEdnaServerThread.is_alive():
-                DAS._startEdnaServerThread.join()
-        if DAS._startWorkflowServerThread is not None:
-            print "DAS._startWorkflowServerThread.is_alive() : ", DAS._startWorkflowServerThread.is_alive()
-            if DAS._startWorkflowServerThread.is_alive():
-                DAS._startWorkflowServerThread.join()
-        self.set_state(PyTango.DevState.ON)
         self.get_device_properties(self.get_device_class())
+        # To make sure we get events without polling
         self.set_change_event("jobSuccess", True, False)
         self.set_change_event("jobFailure", True, False)
         self.set_change_event("jobFinished", True, False)
         # Get configuration from Tango properties
         self._config = self.loadConfig()
-        print "DAS._startEdnaServerThread 1: ", DAS._startEdnaServerThread
-        DAS._startEdnaServerThread = threading.Thread(target = self.startRemoteEdnaServer)
-        DAS._startEdnaServerThread.start()
-        print "DAS._startEdnaServerThread 2: ", DAS._startEdnaServerThread
-        if self._config.Workflow is None:
-            self.set_state(PyTango.DevState.RUNNING)
-        else:
-            print "DAS._startWorkflowServerThread 1: ", DAS._startWorkflowServerThread
-            DAS._startWorkflowServerThread = threading.Thread(target = self.startRemoteEdnaServer)
-            DAS._startWorkflowServerThread.start()
-            print "DAS._startWorkflowServerThread 2: ", DAS._startWorkflowServerThread
-            self.set_state(PyTango.DevState.RUNNING)
+        # Start the state machine
+        self._dasStateMachine = DASStateMachine(self)
+        self._dasStateMachine.start()
 
 
-
-    def startRemoteEdnaServer(self):
-        try:
-            ServerControl.startServer(self._config.EDNA)
-            strEdnaDevice = str(self._config.EDNA.tangoDevice)
-            print strEdnaDevice
-            self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
-            self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-            self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-        except Exception, e:
-            # Something horrible happened!!!
-            self.set_state(PyTango.DevState.FAULT)
-            print e
+    def getConfig(self):
+        return self._config
 
 
-    def startRemoteWorkflowServer(self):
-        try:
-            ServerControl.startServer(self._config.Workflow)
-            strWorkflowDevice = str(self._config.Workflow.tangoDevice)
-            print strWorkflowDevice
-            self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
-            self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-            self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-        except Exception, e:
-            # Something horrible happened!!!
-            self.set_state(PyTango.DevState.FAULT)
-            print e
+    def setEdnaClient(self, _ednaClient):
+        self._ednaClient = _ednaClient
+        self.subscribeEvents(_ednaClient)
 
+    def setWorkflowClient(self, _workflowClient):
+        self._workflowClient = _workflowClient
+        self.subscribeEvents(_workflowClient)
 
+    def subscribeEvents(self, _deviceProxy):
+        _deviceProxy.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+        _deviceProxy.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
 
     def loadConfig(self):
         db = PyTango.Database()
@@ -176,8 +144,6 @@ class DAS(PyTango.Device_4Impl):
 
 
 
-            #TODO: fix this
-
 
 #==================================================================
 #
@@ -198,15 +164,10 @@ class DAS(PyTango.Device_4Impl):
         print "argin = ", argin
         try:
             argout = self._ednaClient.startJob(argin)
-        except PyTango.CommunicationFailed, e:
-            print "ERROR in communication! ", type(e)
-            argout = "COMMUNICATION ERROR"
-        except PyTango.DevFailed, e:
-            print "DevFailed in startJob! ", type(e)
-            argout = "DevFailed"
         except Exception, e:
             print "ERROR in startJob! ", type(e)
-            argout = "GENERAL ERROR"
+            # TODO: Restart EDNA server
+            raise
         print "argout = ", argout
         return argout
 
@@ -385,10 +346,17 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def jobSuccess(self, argin):
         print "In ", self.get_name(), "::jobSuccess()"
-        print "jobId = ", argin.attr_value.value
-        self.push_change_event("jobSuccess", argin.attr_value.value)
-        self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
-        print "events pushed!"
+        # Sometimes argin can be None...
+        if argin is None:
+            print "argin is None"
+        else:
+            print " argin is ", argin
+            # And sometimes even argin.attr_value can be None!
+            if argin.attr_value is None:
+                print "argin.attr_value is None"
+            else:
+                self.push_change_event("jobSuccess", argin.attr_value.value)
+                self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
 
 
 #------------------------------------------------------------------
@@ -400,9 +368,17 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def jobFailure(self, argin):
         print "In ", self.get_name(), "::jobFailure()"
-        print argin.attr_value.value
-        self.push_change_event("jobFailure", argin.attr_value.value)
-        self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
+        # Sometimes argin can be None...
+        if argin is None:
+            print "argin is None"
+        else:
+            print " argin is ", argin
+            # And sometimes even argin.attr_value can be None!
+            if argin.attr_value is None:
+                print "argin.attr_value is None"
+            else:
+                self.push_change_event("jobFailure", argin.attr_value.value)
+                self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
 
 
 #==================================================================
