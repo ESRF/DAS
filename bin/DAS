@@ -2,6 +2,6 @@
 
 . blissrc
 
-application=${BLISSADM}'/applications/DAS/DAS.py '
+application=${BLISSADM}'/applications/DAS/src/DAS.py '
 
 exec python ${application} $*
