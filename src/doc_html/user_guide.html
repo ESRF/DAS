@@ -65,11 +65,9 @@ DAS Class<Br>&nbsp;<Br></Td></Tr>
 <ul>
 	<b>DAS</b> is a TANGO device server meant to be an interface between mxCuBE/bsxCuBE and the EDNA TANGO device server<br>
 (<a href="https://github.com/edna-site/edna/blob/master/tango/bin/tango-EdnaDS.py">tango-EdnaDS</a>) and the DAWN workflow server (WorkflowDS).
-
 <hr>
 <h2>The communication sequence UML diagram:</h2>
 <br><img src="Communication.png" alt="The communication sequence UML diagram"</img>
-
 <hr>
 <a href="../../tests/test_edna_mx.py">Sample Python client</a>
 <hr><Br>
@@ -163,10 +161,13 @@ There is no Class properties.<Br><Br>
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <Td><Center><b>Names</b></td></Center>
 <Td><Center><b>Descriptions</b></td></Center>
-<Tr><Td><b>ON</b></Td>
+<Tr><Td><b>OFF</b></Td>
 <Td><Font Size=-1></Font></Td></Tr>
 
 <Tr><Td><b>FAULT</b></Td>
+<Td><Font Size=-1></Font></Td></Tr>
+
+<Tr><Td><b>RUNNING</b></Td>
 <Td><Font Size=-1></Font></Td></Tr>
 
 
@@ -189,10 +190,10 @@ There is no Class properties.<Br><Br>
 <Td><Center><b>Data Type</b></td></Center>
 <Td><Center><b>R/W Type</b></td></Center>
 <Td><Center><b>Expert</b></td></Center>
-<Tr><Td><b>JobSuccess</b></Td>
+<Tr><Td><b>jobSuccess</b></Td>
 <Td><Center><Font Size=-1>DEV_STRING</Font></Center></Td><Td><Center><Font Size=-1>READ</Font></Center></Td><Td><Center><Font Size=-1>No</Font></Center></Td></Tr>
 
-<Tr><Td><b>JobFailure</b></Td>
+<Tr><Td><b>jobFailure</b></Td>
 <Td><Center><Font Size=-1>DEV_STRING</Font></Center></Td><Td><Center><Font Size=-1>READ</Font></Center></Td><Td><Center><Font Size=-1>No</Font></Center></Td></Tr>
 
 </Table>
@@ -278,7 +279,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_VOID</Strong>
  : none.<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON<Li>Tango::FAULT</Ul>
+<Li>Tango::OFF<Li>Tango::FAULT<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -292,7 +293,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_STATE</Strong>
  : State Code<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON<Li>Tango::FAULT</Ul>
+<Li>Tango::OFF<Li>Tango::FAULT<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -306,7 +307,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>CONST_DEV_STRING</Strong>
  : Status description<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON<Li>Tango::FAULT</Ul>
+<Li>Tango::OFF<Li>Tango::FAULT<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -320,7 +321,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_STRING</Strong>
  : job id<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON</Ul>
+<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -334,7 +335,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_BOOLEAN</Strong>
  : <Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON</Ul>
+<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -348,7 +349,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_STRING</Strong>
  : job state<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON</Ul>
+<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -362,7 +363,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_STRING</Strong>
  : Message<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON</Ul>
+<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>
@@ -376,7 +377,7 @@ The language device desctructor automatically calls the <i> delete_device() </i>
 <Li><Strong>Argout:<Br>DEV_STRING</Strong>
  : job output xml<Br>&nbsp
 <Li><Strong>Command allowed for: </Strong><Ul>
-<Li>Tango::ON</Ul>
+<Li>Tango::RUNNING</Ul>
 <Br>&nbsp
 </ul><Br>
 <Br>

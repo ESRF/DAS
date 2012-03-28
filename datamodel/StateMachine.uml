@@ -3,7 +3,7 @@
   <packagedElement xmi:type="uml:Package" xmi:id="idPackage" name="State Machine Package">
     <packagedElement xmi:type="uml:StateMachine" xmi:id="idStateMachine" name="DAS">
       <region xmi:id="idRegion" name="MainRegion">
-        <subvertex xmi:type="uml:State" xmi:id="_x3yi0HQtEeGtg6-t70GZwg" name="ON"/>
+        <subvertex xmi:type="uml:State" xmi:id="_x3yi0HQtEeGtg6-t70GZwg" name="OFF"/>
         <subvertex xmi:type="uml:State" xmi:id="_0ZGB8HQtEeGtg6-t70GZwg" name="RUNNING"/>
         <subvertex xmi:type="uml:State" xmi:id="_3Z45cHQtEeGtg6-t70GZwg" name="FAULT"/>
         <transition xmi:id="_7qNfIHQtEeGtg6-t70GZwg" name="If declared EDNA and Workflow servers are up and running" kind="local" source="_x3yi0HQtEeGtg6-t70GZwg" target="_0ZGB8HQtEeGtg6-t70GZwg"/>

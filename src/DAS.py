@@ -35,7 +35,7 @@ import PyTango
 import sys, time, threading
 
 from config import DASConfig
-from DASStateMachine import DASStateMachine
+from ServerControl import ServerControl
 
 #==================================================================
 #   DAS Class Description:
@@ -52,15 +52,13 @@ from DASStateMachine import DASStateMachine
 #==================================================================
 #     Device States Description:
 #
-#   DevState.ON :
+#   DevState.OFF :
 #   DevState.FAULT :
+#   DevState.RUNNING :
 #==================================================================
 
 
 class DAS(PyTango.Device_4Impl):
-
-    _startEdnaServerThread = None
-    _startWorkflowServerThread = None
 
 #--------- Add you global variables here --------------------------
 
@@ -72,269 +70,63 @@ class DAS(PyTango.Device_4Impl):
         DAS.init_device(self)
 
 #------------------------------------------------------------------
-#    Device destructor
-#------------------------------------------------------------------
-    def delete_device(self):
-        print "[Device delete_device method] for device", self.get_name()
-        self._dasStateMachine.stop()
-
-#==================================================================
-#
-#    DAS read/write attribute methods
-#
-#==================================================================
-#------------------------------------------------------------------
-#    Read Attribute Hardware
-#------------------------------------------------------------------
-    def read_attr_hardware(self, data):
-        print "In ", self.get_name(), "::read_attr_hardware()"
-
-
-#------------------------------------------------------------------
 #    Device initialization
 #------------------------------------------------------------------
     def init_device(self):
         self.get_device_properties(self.get_device_class())
         # To make sure we get events without polling
+        self.set_change_event("State", True, False)
         self.set_change_event("jobSuccess", True, False)
         self.set_change_event("jobFailure", True, False)
         self.set_change_event("jobFinished", True, False)
         # Get configuration from Tango properties
         self._config = self.loadConfig()
         # Start the state machine
-        self._dasStateMachine = DASStateMachine(self)
-        self._dasStateMachine.start()
-
-
-    def getConfig(self):
-        return self._config
-
-
-    def setEdnaClient(self, _ednaClient):
-        self._ednaClient = _ednaClient
-        self.subscribeEvents(_ednaClient)
-
-    def setWorkflowClient(self, _workflowClient):
-        self._workflowClient = _workflowClient
-        self.subscribeEvents(_workflowClient)
-
-    def subscribeEvents(self, _deviceProxy):
-        _deviceProxy.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-        _deviceProxy.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-
-    def loadConfig(self):
-        db = PyTango.Database()
-        listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
-        #print listXmlConfig, type(listXmlConfig)
-        config = None
-        if len(listXmlConfig) == 0:
-            print "ERROR! No property 'Config' defined in Tango data base for device server %s" % self.get_name()
-            sys.exit(1)
-        try:
-            # Convert list of lines to one string
-            strXmlConfig = ''.join(listXmlConfig)
-            config = DASConfig.parseString(strXmlConfig)
-            #print config.marshal()
-        except Exception:
-            print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
-            print "Config XML:"
-            print strXmlConfig
-            raise
-        return config
-
-
-
-
-#==================================================================
-#
-#    DAS command methods
-#
-#==================================================================
-
-#------------------------------------------------------------------
-#    startJob command:
-#
-#    Description: 
-#    argin:  DevVarStringArray    [<Module to execute>,<XML input>]
-#    argout: DevString    job id
-#------------------------------------------------------------------
-    def startJob(self, argin):
-        print "In ", self.get_name(), "::startJob()"
-        #self._config = self.loadConfig()        
-        print "argin = ", argin
-        try:
-            argout = self._ednaClient.startJob(argin)
-        except Exception, e:
-            print "ERROR in startJob! ", type(e)
-            # TODO: Restart EDNA server
-            raise
-        print "argout = ", argout
-        return argout
-
+        #self._dasStateMachine = DASStateMachine(self)
+        #self._dasStateMachine.start()
+        self.startRemoteEdnaServer()
+        if self._config.Workflow is not None:
+            self.startRemoteWorkflowServer()
+        self.push_change_event("State", self.get_state())
 
 
 #------------------------------------------------------------------
-#    Read JobSuccess attribute
+#    Device destructor
 #------------------------------------------------------------------
-    def read_JobSuccess(self, attr):
-        print "In ", self.get_name(), "::read_JobSuccess()"
+    def delete_device(self):
+        print "[Device delete_device method] for device", self.get_name()
+        self._dasStateMachine.stop()
 
-        #    Add your own code here
-
-        attr_JobSuccess_read = "Hello Tango world"
-        attr.set_value(attr_JobSuccess_read)
-
-
-#---- JobSuccess attribute State Machine -----------------
-    def is_JobSuccess_allowed(self, req_type):
-        if self.get_state() in [PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
+#------------------------------------------------------------------
+#    Always excuted hook method
+#------------------------------------------------------------------
+    def always_executed_hook(self):
+        #print "In ", self.get_name(), "::always_excuted_hook()"
+        pass
 
 
 #------------------------------------------------------------------
-#    Read JobFailure attribute
-#------------------------------------------------------------------
-    def read_JobFailure(self, attr):
-        print "In ", self.get_name(), "::read_JobFailure()"
-
-        #    Add your own code here
-
-        attr_JobFailure_read = "Hello Tango world"
-        attr.set_value(attr_JobFailure_read)
-
-
-#---- JobFailure attribute State Machine -----------------
-    def is_JobFailure_allowed(self, req_type):
-        if self.get_state() in [PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-#------------------------------------------------------------------
-#    Read jobFinished attribute
-#------------------------------------------------------------------
-    def read_jobFinished(self, attr):
-        print "In ", self.get_name(), "::read_jobFinished()"
-
-        #    Add your own code here
-
-        attr_jobFinished_read = ["No job launched yet", "failure"]
-        attr.set_value(attr_jobFinished_read)
-
-
-#---- jobFinished attribute State Machine -----------------
-    def is_jobFinished_allowed(self, req_type):
-        if self.get_state() in [PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-
-#---- startJob command State Machine -----------------
-    def is_startJob_allowed(self):
-        if self.get_state() in [PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-#------------------------------------------------------------------
-#    abort command:
-#
-#    Description: 
-#    argin:  DevString    job id
-#    argout: DevBoolean    
-#------------------------------------------------------------------
-    def abort(self, argin):
-        print "In ", self.get_name(), "::abort()"
-        #    Add your own code here
-        argout = False
-        return argout
-
-
-#---- abort command State Machine -----------------
-    def is_abort_allowed(self):
-        if self.get_state() in [PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-#------------------------------------------------------------------
-#    getJobState command:
-#
-#    Description: 
-#    argin:  DevString    job_id
-#    argout: DevString    job state
-#------------------------------------------------------------------
-    def getJobState(self, argin):
-        print "In ", self.get_name(), "::getJobState()"
-        #    Add your own code here
-        argout = "Not implemented"
-        return argout
-
-
-#---- getJobState command State Machine -----------------
-    def is_getJobState_allowed(self):
-        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-#------------------------------------------------------------------
-#    initPlugin command:
-#
-#    Description: 
-#    argin:  DevString    plugin name
-#    argout: DevString    Message
-#------------------------------------------------------------------
-    def initPlugin(self, argin):
-        print "In ", self.get_name(), "::initPlugin()"
-        #    Add your own code here
-        argout = "Not implemented"
-        return argout
-
-
-#---- initPlugin command State Machine -----------------
-    def is_initPlugin_allowed(self):
-        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
-
-
-#------------------------------------------------------------------
-#    getJobOutput command:
+#    jobFailure command:
 #
 #    Description: 
 #    argin:  DevString    jobId
-#    argout: DevString    job output xml
+#    argout: None
 #------------------------------------------------------------------
-    def getJobOutput(self, argin):
-        print "In ", self.get_name(), "::getJobOutput()"
-        argout = self._ednaClient.getJobOutput(argin)
-        return argout
-
-
-#---- getJobOutput command State Machine -----------------
-    def is_getJobOutput_allowed(self):
-        if self.get_state() in [PyTango.DevState.ON, PyTango.DevState.FAULT]:
-            #    End of Generated Code
-            #    Re-Start of Generated Code
-            return False
-        return True
+    def jobFailure(self, argin):
+        print "In ", self.get_name(), "::jobFailure()"
+        # Sometimes argin can be None...
+        if argin is None:
+            print "argin is None"
+        else:
+            print " argin is ", argin
+            # And sometimes even argin.attr_value can be None!
+            if argin.attr_value is None:
+                print "argin.attr_value is None"
+            elif argin.attr_value.value is None:
+                print "argin.attr_value.value is None"
+            else:
+                self.push_change_event("jobFailure", argin.attr_value.value)
+                self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
 
 
 #------------------------------------------------------------------
@@ -361,29 +153,342 @@ class DAS(PyTango.Device_4Impl):
                 self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
 
 
+#---- JobFailure attribute State Machine -----------------
+    def is_JobFailure_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.OFF, PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
 #------------------------------------------------------------------
-#    jobFailure command:
+#    Read JobFailure attribute
+#------------------------------------------------------------------
+    def read_JobFailure(self, attr):
+        print "In ", self.get_name(), "::read_JobFailure()"
+
+        #    Add your own code here
+
+        attr_JobFailure_read = "Hello Tango world"
+        attr.set_value(attr_JobFailure_read)
+
+
+#---- JobSuccess attribute State Machine -----------------
+    def is_JobSuccess_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.OFF, PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    Read JobSuccess attribute
+#------------------------------------------------------------------
+    def read_JobSuccess(self, attr):
+        print "In ", self.get_name(), "::read_JobSuccess()"
+
+        #    Add your own code here
+
+        attr_JobSuccess_read = "Hello Tango world"
+        attr.set_value(attr_JobSuccess_read)
+
+
+#------------------------------------------------------------------
+#    Read Attribute Hardware
+#------------------------------------------------------------------
+    def read_attr_hardware(self, data):
+        print "In ", self.get_name(), "::read_attr_hardware()"
+
+
+    def getConfig(self):
+        return self._config
+
+
+    def loadConfig(self):
+        db = PyTango.Database()
+        listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
+        #print listXmlConfig, type(listXmlConfig)
+        config = None
+        if len(listXmlConfig) == 0:
+            print "ERROR! No property 'Config' defined in Tango data base for device server %s" % self.get_name()
+            sys.exit(1)
+        try:
+            # Convert list of lines to one string
+            strXmlConfig = ''.join(listXmlConfig)
+            config = DASConfig.parseString(strXmlConfig)
+            #print config.marshal()
+        except Exception:
+            print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
+            print "Config XML:"
+            print strXmlConfig
+            raise
+        return config
+
+#==================================================================
+#
+#    DAS read/write attribute methods
+#
+#==================================================================
+
+
+#------------------------------------------------------------------
+#    Read jobSuccess attribute
+#------------------------------------------------------------------
+    def read_jobSuccess(self, attr):
+        print "In ", self.get_name(), "::read_jobSuccess()"
+
+        #    Add your own code here
+
+        attr_jobSuccess_read = "Hello Tango world"
+        attr.set_value(attr_jobSuccess_read)
+
+
+#------------------------------------------------------------------
+#    Read jobFailure attribute
+#------------------------------------------------------------------
+    def read_jobFailure(self, attr):
+        print "In ", self.get_name(), "::read_jobFailure()"
+
+        #    Add your own code here
+
+        attr_jobFailure_read = "Hello Tango world"
+        attr.set_value(attr_jobFailure_read)
+
+
+#------------------------------------------------------------------
+#    Read jobFinished attribute
+#------------------------------------------------------------------
+    def read_jobFinished(self, attr):
+        print "In ", self.get_name(), "::read_jobFinished()"
+
+        #    Add your own code here
+
+        attr_jobFinished_read = ["No job launched yet", "failure"]
+        attr.set_value(attr_jobFinished_read)
+
+
+#---- jobFinished attribute State Machine -----------------
+    def is_jobFinished_allowed(self, req_type):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+
+#==================================================================
+#
+#    DAS command methods
+#
+#==================================================================
+
+#------------------------------------------------------------------
+#    State command:
+#
+#    Description: This command gets the device state (stored in its <i>device_state</i> data member) and returns it to the caller.
+#                
+#    argout: DevState    State Code
+#------------------------------------------------------------------
+    def dev_state(self):
+        #print "In ", self.get_name(), "::dev_state() = " , self.get_state()
+        #    Add your own code here
+        if not ServerControl.checkServer(self._config.EDNA.tangoDevice):
+# trick - only restart the server if the server has already been detected down
+#         this will happen the second time dev_state()
+            if self.get_state() == PyTango.DevState.OFF:
+                self.startRemoteEdnaServer()
+            else:
+                self.set_state(PyTango.DevState.OFF)
+
+        if self._config.Workflow is not None:
+            if not ServerControl.checkServer(self._config.Workflow.tangoDevice):
+# trick - same trick as above
+                if self.get_state() == PyTango.DevState.OFF:
+                    self.startRemoteWorkflowServer()
+                else:
+                    self.set_state(PyTango.DevState.OFF)
+        argout = self.get_state()
+        return argout
+
+
+#------------------------------------------------------------------
+#    Status command:
+#
+#    Description: This command gets the device status (stored in its <i>device_status</i> data member) and returns it to the caller.
+#                
+#    argout: ConstDevString    Status description
+#------------------------------------------------------------------
+    def dev_status(self):
+        print "In ", self.get_name(), "::dev_status()"
+        self.the_status = self.get_status()
+        #    Add your own code here
+
+        self.set_status(self.the_status)
+        return self.the_status
+
+
+#------------------------------------------------------------------
+#    startJob command:
+#
+#    Description: 
+#    argin:  DevVarStringArray    [<Module to execute>,<XML input>]
+#    argout: DevString    job id
+#------------------------------------------------------------------
+    def startJob(self, argin):
+        print "In ", self.get_name(), "::startJob()"
+        #self._config = self.loadConfig()        
+        print "argin = ", argin
+        try:
+            argout = self._ednaClient.startJob(argin)
+        except Exception, e:
+            print "ERROR in startJob! ", type(e)
+            # TODO: Restart EDNA server
+            raise
+        print "argout = ", argout
+        return argout
+
+
+#---- startJob command State Machine -----------------
+    def is_startJob_allowed(self):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    abort command:
+#
+#    Description: 
+#    argin:  DevString    job id
+#    argout: DevBoolean    
+#------------------------------------------------------------------
+    def abort(self, argin):
+        print "In ", self.get_name(), "::abort()"
+        #    Add your own code here
+        argout = False
+        return argout
+
+
+#---- abort command State Machine -----------------
+    def is_abort_allowed(self):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    getJobState command:
+#
+#    Description: 
+#    argin:  DevString    job_id
+#    argout: DevString    job state
+#------------------------------------------------------------------
+    def getJobState(self, argin):
+        print "In ", self.get_name(), "::getJobState()"
+        #    Add your own code here
+        argout = "Not implemented"
+        return argout
+
+
+#---- getJobState command State Machine -----------------
+    def is_getJobState_allowed(self):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    initPlugin command:
+#
+#    Description: 
+#    argin:  DevString    plugin name
+#    argout: DevString    Message
+#------------------------------------------------------------------
+    def initPlugin(self, argin):
+        print "In ", self.get_name(), "::initPlugin()"
+        #    Add your own code here
+        argout = "Not implemented"
+        return argout
+
+
+#---- initPlugin command State Machine -----------------
+    def is_initPlugin_allowed(self):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+#------------------------------------------------------------------
+#    getJobOutput command:
 #
 #    Description: 
 #    argin:  DevString    jobId
-#    argout: None
+#    argout: DevString    job output xml
 #------------------------------------------------------------------
-    def jobFailure(self, argin):
-        print "In ", self.get_name(), "::jobFailure()"
-        # Sometimes argin can be None...
-        if argin is None:
-            print "argin is None"
-        else:
-            print " argin is ", argin
-            # And sometimes even argin.attr_value can be None!
-            if argin.attr_value is None:
-                print "argin.attr_value is None"
-            elif argin.attr_value.value is None:
-                print "argin.attr_value.value is None"
-            else:
-                self.push_change_event("jobFailure", argin.attr_value.value)
-                self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
+    def getJobOutput(self, argin):
+        print "In ", self.get_name(), "::getJobOutput()"
+        argout = self._ednaClient.getJobOutput(argin)
+        return argout
 
+
+#---- getJobOutput command State Machine -----------------
+    def is_getJobOutput_allowed(self):
+        if self.get_state() in [PyTango.DevState.OFF,
+                                PyTango.DevState.FAULT]:
+            #    End of Generated Code
+            #    Re-Start of Generated Code
+            return False
+        return True
+
+
+    def startRemoteEdnaServer(self):
+        try:
+            self.set_state(PyTango.DevState.OFF)
+            ServerControl.startServer(self._config.EDNA)
+            strEdnaDevice = str(self._config.EDNA.tangoDevice)
+            print strEdnaDevice
+            self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
+            self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+            self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+            self.set_state(PyTango.DevState.RUNNING)
+        except Exception, e:
+            # Something horrible happened!!!
+            self.set_state(PyTango.DevState.FAULT)
+            # TODO: send email
+            raise
+
+
+    def startRemoteWorkflowServer(self):
+        try:
+            self.set_state(PyTango.DevState.OFF)
+            ServerControl.startServer(self._config.Workflow)
+            strWorkflowDevice = str(self._config.Workflow.tangoDevice)
+            print strWorkflowDevice
+            self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
+            self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+            self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+            self.set_state(PyTango.DevState.RUNNING)
+        except Exception, e:
+            # Something horrible happened!!!
+            self.set_state(PyTango.DevState.FAULT)
+            # TODO: send email
+            raise
 
 #==================================================================
 #

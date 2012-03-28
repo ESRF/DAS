@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <diagrams:Diagrams xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.topcased.org/DI/1.0" xmlns:diagrams="http://www.topcased.org/Diagrams/1.0" xmi:id="_UVbRIXQtEeGtg6-t70GZwg" activeDiagram="_UVbRInQtEeGtg6-t70GZwg">
   <model href="StateMachine.uml#idStateMachine"/>
-  <diagrams xmi:id="_UVbRInQtEeGtg6-t70GZwg" position="0,0" size="833,278" name="DAS" viewport="-1,0">
+  <diagrams xmi:id="_UVbRInQtEeGtg6-t70GZwg" position="0,0" size="833,278" name="DAS" viewport="0,0">
     <property xmi:id="_UWrOUHQtEeGtg6-t70GZwg" key="pageFormatName" value=""/>
     <property xmi:id="_UWrOUXQtEeGtg6-t70GZwg" key="diagramWidth" value="842"/>
     <property xmi:id="_UWrOUnQtEeGtg6-t70GZwg" key="diagramHeight" value="306"/>
@@ -58,6 +58,7 @@
         </semanticModel>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="_O2jiwnQvEeGaiN-oGA6d0g" id="nameEdgeObject" offset="-4,-15"/>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="_O2jiw3QvEeGaiN-oGA6d0g" visible="false" id="TransitionStereotypeEdgeObject"/>
+        <waypoints>[197, -30, -191, -31]</waypoints>
       </contained>
     </contained>
   </diagrams>
