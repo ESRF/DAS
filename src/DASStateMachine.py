@@ -34,16 +34,17 @@ class DASStateMachine(threading.Thread):
         self.startRemoteEdnaServer()
         if self._config.Workflow is not None:
             self.startRemoteWorkflowServer()
+        time.sleep(self._fPollingTime)
         # Continue till aborted
         while self._bContinue:
-            # Sleep the polling time
-            time.sleep(self._fPollingTime)
             # Check servers and start them if not running
             if not ServerControl.checkServer(self._config.EDNA.tangoDevice):
                 self.startRemoteEdnaServer()
             if self._config.Workflow is not None:
                 if not ServerControl.checkServer(self._config.Workflow.tangoDevice):
                     self.startRemoteWorkflowServer()
+            # Sleep the polling time
+            time.sleep(self._fPollingTime)
 
 
 

@@ -354,6 +354,8 @@ class DAS(PyTango.Device_4Impl):
             # And sometimes even argin.attr_value can be None!
             if argin.attr_value is None:
                 print "argin.attr_value is None"
+            elif argin.attr_value.value is None:
+                print "argin.attr_value.value is None"
             else:
                 self.push_change_event("jobSuccess", argin.attr_value.value)
                 self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
@@ -376,6 +378,8 @@ class DAS(PyTango.Device_4Impl):
             # And sometimes even argin.attr_value can be None!
             if argin.attr_value is None:
                 print "argin.attr_value is None"
+            elif argin.attr_value.value is None:
+                print "argin.attr_value.value is None"
             else:
                 self.push_change_event("jobFailure", argin.attr_value.value)
                 self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
