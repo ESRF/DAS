@@ -58,7 +58,7 @@
         </semanticModel>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="_O2jiwnQvEeGaiN-oGA6d0g" id="nameEdgeObject" offset="-4,-15"/>
         <contained xsi:type="di:EdgeObjectOffset" xmi:id="_O2jiw3QvEeGaiN-oGA6d0g" visible="false" id="TransitionStereotypeEdgeObject"/>
-        <waypoints>[197, -30, -191, -31]</waypoints>
+        <waypoints>[199, -3, -189, -4]</waypoints>
       </contained>
     </contained>
   </diagrams>
