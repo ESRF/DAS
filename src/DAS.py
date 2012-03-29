@@ -31,8 +31,7 @@
 #
 
 
-import PyTango
-import sys, time, threading
+import PyTango, sys
 
 from config import DASConfig
 from ServerControl import ServerControl
@@ -78,7 +77,7 @@ class DAS(PyTango.Device_4Impl):
         self.set_change_event("State", True, False)
         self.set_change_event("jobSuccess", True, False)
         self.set_change_event("jobFailure", True, False)
-        self.set_change_event("jobFinished", True, False)
+        self.set_change_event("dataAnalysisInformation", True, False)
         # Get configuration from Tango properties
         self._config = self.loadConfig()
         # Start the state machine
@@ -126,7 +125,7 @@ class DAS(PyTango.Device_4Impl):
                 print "argin.attr_value.value is None"
             else:
                 self.push_change_event("jobFailure", argin.attr_value.value)
-                self.push_change_event("jobFinished", [argin.attr_value.value, "failure"])
+                self.push_change_event("dataAnalysisInformation", [argin.attr_value.value, "failure"])
 
 
 #------------------------------------------------------------------
@@ -150,7 +149,7 @@ class DAS(PyTango.Device_4Impl):
                 print "argin.attr_value.value is None"
             else:
                 self.push_change_event("jobSuccess", argin.attr_value.value)
-                self.push_change_event("jobFinished", [argin.attr_value.value, "success"])
+                self.push_change_event("dataAnalysisInformation", [argin.attr_value.value, "success"])
 
 
 #---- JobFailure attribute State Machine -----------------
@@ -258,19 +257,19 @@ class DAS(PyTango.Device_4Impl):
 
 
 #------------------------------------------------------------------
-#    Read jobFinished attribute
+#    Read dataAnalysisInformation attribute
 #------------------------------------------------------------------
-    def read_jobFinished(self, attr):
-        print "In ", self.get_name(), "::read_jobFinished()"
+    def read_dataAnalysisInformation(self, attr):
+        print "In ", self.get_name(), "::read_dataAnalysisInformation()"
 
         #    Add your own code here
 
-        attr_jobFinished_read = ["No job launched yet", "failure"]
-        attr.set_value(attr_jobFinished_read)
+        attr_dataAnalysisInformation_read = ["No job launched yet", "failure"]
+        attr.set_value(attr_dataAnalysisInformation_read)
 
 
-#---- jobFinished attribute State Machine -----------------
-    def is_jobFinished_allowed(self, req_type):
+#---- dataAnalysisInformation attribute State Machine -----------------
+    def is_dataAnalysisInformation_allowed(self, req_type):
         if self.get_state() in [PyTango.DevState.OFF,
                                 PyTango.DevState.FAULT]:
             #    End of Generated Code
@@ -541,7 +540,7 @@ class DASClass(PyTango.DeviceClass):
             [[PyTango.DevString,
             PyTango.SCALAR,
             PyTango.READ]],
-        'jobFinished':
+        'dataAnalysisInformation':
             [[PyTango.DevString,
             PyTango.SPECTRUM,
             PyTango.READ, 2]],
