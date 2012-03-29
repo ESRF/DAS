@@ -1,18 +1,34 @@
 <?xml version="1.0" ?>
 <DASConfig>
+  <contactEmail>svensson@esrf.fr</contactEmail>
   <EDNA>
     <tangoDevice>id23eh1/edna/1</tangoDevice>
     <tangoHost>basil:20000</tangoHost>
     <tangoServerName>id23eh1</tangoServerName>
     <principalServer>
-      <host>slavia.esrf.fr</host>
+      <host>sparta.esrf.fr</host>
       <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
       <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
     </principalServer>
     <alternativeServer>
-      <host>sparta.esrf.fr</host>
+      <host>slavia.esrf.fr</host>
       <startScriptPath>/opt/pxsoft/bin/edna-tango-server-start</startScriptPath>
       <stopScriptPath>/opt/pxsoft/bin/edna-tango-server-stop</stopScriptPath>
     </alternativeServer>
   </EDNA>
+  <Workflow>
+    <tangoDevice>id23eh1/workflow/1</tangoDevice>
+    <tangoHost>basil:20000</tangoHost>
+    <tangoServerName>id23eh1</tangoServerName>
+    <principalServer>
+      <host>sparta.esrf.fr</host>
+      <startScriptPath>/opt/pxsoft/bin/workflow-tango-server-start</startScriptPath>
+      <stopScriptPath>/opt/pxsoft/bin/workflow-tango-server-stop</stopScriptPath>
+    </principalServer>
+    <alternativeServer>
+      <host>slavia.esrf.fr</host>
+      <startScriptPath>/opt/pxsoft/bin/workflow-tango-server-start</startScriptPath>
+      <stopScriptPath>/opt/pxsoft/bin/workflow-tango-server-stop</stopScriptPath>
+    </alternativeServer>
+  </Workflow>
 </DASConfig>
