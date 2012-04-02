@@ -96,7 +96,7 @@ class DAS(PyTango.Device_4Impl):
 #------------------------------------------------------------------
     def delete_device(self):
         self.debug_stream("[Device delete_device method] for device", self.get_name())
-        self._dasStateMachine.stop()
+
 
 #------------------------------------------------------------------
 #    Always excuted hook method
