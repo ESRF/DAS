@@ -11,9 +11,10 @@ class DasDS_test_start_stop_servers(TestCase):
 
 
     def test_isLocalHost(self):
+        serverControl = ServerControl()
         strLocalHost = socket.gethostname() 
-        self.assertTrue(ServerControl.isLocalHost(strLocalHost), "Host is localhost")
-        self.assertTrue(ServerControl.isLocalHost(strLocalHost+".esrf.fr"), "Host + .esrf.fr is localhost")
+        self.assertTrue(serverControl.isLocalHost(strLocalHost), "Host is localhost")
+        self.assertTrue(serverControl.isLocalHost(strLocalHost+".esrf.fr"), "Host + .esrf.fr is localhost")
         
         
 
@@ -29,5 +30,6 @@ class DasDS_test_start_stop_servers(TestCase):
         with open(strPathToConfigFile) as f:
             strXmlConfig = f.read()
             config = DASConfig.parseString(strXmlConfig)
-            ServerControl.startServer(config.EDNA)
+            serverControl = ServerControl()
+            serverControl.startServer(config.EDNA)
     

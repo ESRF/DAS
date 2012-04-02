@@ -83,6 +83,8 @@ class DAS(PyTango.Device_4Impl):
         # Start the state machine
         #self._dasStateMachine = DASStateMachine(self)
         #self._dasStateMachine.start()
+        #self._serverControl = ServerControl()
+        self._serverControl = ServerControl(_logger_method=self.debug_stream)
         self.startRemoteEdnaServer()
         if self._config.Workflow is not None:
             self.startRemoteWorkflowServer()
@@ -93,14 +95,14 @@ class DAS(PyTango.Device_4Impl):
 #    Device destructor
 #------------------------------------------------------------------
     def delete_device(self):
-        print "[Device delete_device method] for device", self.get_name()
+        self.debug_stream("[Device delete_device method] for device", self.get_name())
         self._dasStateMachine.stop()
 
 #------------------------------------------------------------------
 #    Always excuted hook method
 #------------------------------------------------------------------
     def always_executed_hook(self):
-        #print "In ", self.get_name(), "::always_excuted_hook()"
+        #self.debug_stream("In ", self.get_name(), "::always_excuted_hook()")
         pass
 
 
@@ -112,17 +114,17 @@ class DAS(PyTango.Device_4Impl):
 #    argout: None
 #------------------------------------------------------------------
     def jobFailure(self, argin):
-        print "In ", self.get_name(), "::jobFailure()"
+        self.debug_stream("In ", self.get_name(), "::jobFailure()")
         # Sometimes argin can be None...
         if argin is None:
-            print "argin is None"
+            self.debug_stream("argin is None")
         else:
-            print " argin is ", argin
+            self.debug_stream(" argin is ", argin)
             # And sometimes even argin.attr_value can be None!
             if argin.attr_value is None:
-                print "argin.attr_value is None"
+                self.debug_stream("argin.attr_value is None")
             elif argin.attr_value.value is None:
-                print "argin.attr_value.value is None"
+                self.debug_stream("argin.attr_value.value is None")
             else:
                 self.push_change_event("jobFailure", argin.attr_value.value)
                 self.push_change_event("dataAnalysisInformation", [argin.attr_value.value, "failure"])
@@ -136,17 +138,17 @@ class DAS(PyTango.Device_4Impl):
 #    argout: None
 #------------------------------------------------------------------
     def jobSuccess(self, argin):
-        print "In ", self.get_name(), "::jobSuccess()"
+        self.debug_stream("In ", self.get_name(), "::jobSuccess()")
         # Sometimes argin can be None...
         if argin is None:
-            print "argin is None"
+            self.debug_stream("argin is None")
         else:
-            print " argin is ", argin
+            self.debug_stream(" argin is ", argin)
             # And sometimes even argin.attr_value can be None!
             if argin.attr_value is None:
-                print "argin.attr_value is None"
+                self.debug_stream("argin.attr_value is None")
             elif argin.attr_value.value is None:
-                print "argin.attr_value.value is None"
+                self.debug_stream("argin.attr_value.value is None")
             else:
                 self.push_change_event("jobSuccess", argin.attr_value.value)
                 self.push_change_event("dataAnalysisInformation", [argin.attr_value.value, "success"])
@@ -165,7 +167,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read JobFailure attribute
 #------------------------------------------------------------------
     def read_JobFailure(self, attr):
-        print "In ", self.get_name(), "::read_JobFailure()"
+        self.debug_stream("In ", self.get_name(), "::read_JobFailure()")
 
         #    Add your own code here
 
@@ -186,7 +188,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read JobSuccess attribute
 #------------------------------------------------------------------
     def read_JobSuccess(self, attr):
-        print "In ", self.get_name(), "::read_JobSuccess()"
+        self.debug_stream("In ", self.get_name(), "::read_JobSuccess()")
 
         #    Add your own code here
 
@@ -198,7 +200,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read Attribute Hardware
 #------------------------------------------------------------------
     def read_attr_hardware(self, data):
-        print "In ", self.get_name(), "::read_attr_hardware()"
+        self.debug_stream("In ", self.get_name(), "::read_attr_hardware()")
 
 
     def getConfig(self):
@@ -208,20 +210,20 @@ class DAS(PyTango.Device_4Impl):
     def loadConfig(self):
         db = PyTango.Database()
         listXmlConfig = db.get_device_property(self.get_name(), "Config")["Config"]
-        #print listXmlConfig, type(listXmlConfig)
+        #self.debug_stream(listXmlConfig, type(listXmlConfig))
         config = None
         if len(listXmlConfig) == 0:
-            print "ERROR! No property 'Config' defined in Tango data base for device server %s" % self.get_name()
+            self.debug_stream("ERROR! No property 'Config' defined in Tango data base for device server %s" % self.get_name())
             sys.exit(1)
         try:
             # Convert list of lines to one string
             strXmlConfig = ''.join(listXmlConfig)
             config = DASConfig.parseString(strXmlConfig)
-            #print config.marshal()
+            #self.debug_stream(config.marshal())
         except Exception:
-            print "ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name()
-            print "Config XML:"
-            print strXmlConfig
+            self.debug_stream("ERROR! Exception caught when trying to unmarshal config XML for server %s" % self.get_name())
+            self.debug_stream("Config XML:")
+            self.debug_stream(strXmlConfig)
             raise
         return config
 
@@ -236,7 +238,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read jobSuccess attribute
 #------------------------------------------------------------------
     def read_jobSuccess(self, attr):
-        print "In ", self.get_name(), "::read_jobSuccess()"
+        self.debug_stream("In ", self.get_name(), "::read_jobSuccess()")
 
         #    Add your own code here
 
@@ -248,7 +250,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read jobFailure attribute
 #------------------------------------------------------------------
     def read_jobFailure(self, attr):
-        print "In ", self.get_name(), "::read_jobFailure()"
+        self.debug_stream("In ", self.get_name(), "::read_jobFailure()")
 
         #    Add your own code here
 
@@ -260,7 +262,7 @@ class DAS(PyTango.Device_4Impl):
 #    Read dataAnalysisInformation attribute
 #------------------------------------------------------------------
     def read_dataAnalysisInformation(self, attr):
-        print "In ", self.get_name(), "::read_dataAnalysisInformation()"
+        self.debug_stream("In ", self.get_name(), "::read_dataAnalysisInformation()")
 
         #    Add your own code here
 
@@ -293,9 +295,9 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevState    State Code
 #------------------------------------------------------------------
     def dev_state(self):
-        #print "In ", self.get_name(), "::dev_state() = " , self.get_state()
+        #self.debug_stream("In ", self.get_name(), "::dev_state() = " , self.get_state())
         #    Add your own code here
-        if not ServerControl.checkServer(self._config.EDNA.tangoDevice):
+        if not self._serverControl.checkServer(self._config.EDNA.tangoDevice):
 # trick - only restart the server if the server has already been detected down
 #         this will happen the second time dev_state()
             if self.get_state() == PyTango.DevState.OFF:
@@ -304,7 +306,7 @@ class DAS(PyTango.Device_4Impl):
                 self.set_state(PyTango.DevState.OFF)
 
         if self._config.Workflow is not None:
-            if not ServerControl.checkServer(self._config.Workflow.tangoDevice):
+            if not self._serverControl.checkServer(self._config.Workflow.tangoDevice):
 # trick - same trick as above
                 if self.get_state() == PyTango.DevState.OFF:
                     self.startRemoteWorkflowServer()
@@ -322,7 +324,7 @@ class DAS(PyTango.Device_4Impl):
 #    argout: ConstDevString    Status description
 #------------------------------------------------------------------
     def dev_status(self):
-        print "In ", self.get_name(), "::dev_status()"
+        self.debug_stream("In ", self.get_name(), "::dev_status()")
         self.the_status = self.get_status()
         #    Add your own code here
 
@@ -338,16 +340,16 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevString    job id
 #------------------------------------------------------------------
     def startJob(self, argin):
-        print "In ", self.get_name(), "::startJob()"
+        self.debug_stream("In ", self.get_name(), "::startJob()")
         #self._config = self.loadConfig()        
-        print "argin = ", argin
+        self.debug_stream("argin = ", argin)
         try:
             argout = self._ednaClient.startJob(argin)
         except Exception, e:
-            print "ERROR in startJob! ", type(e)
+            self.debug_stream("ERROR in startJob! ", type(e))
             # TODO: Restart EDNA server
             raise
-        print "argout = ", argout
+        self.debug_stream("argout = ", argout)
         return argout
 
 
@@ -369,7 +371,7 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevBoolean    
 #------------------------------------------------------------------
     def abort(self, argin):
-        print "In ", self.get_name(), "::abort()"
+        self.debug_stream("In ", self.get_name(), "::abort()")
         #    Add your own code here
         argout = False
         return argout
@@ -393,7 +395,7 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevString    job state
 #------------------------------------------------------------------
     def getJobState(self, argin):
-        print "In ", self.get_name(), "::getJobState()"
+        self.debug_stream("In ", self.get_name(), "::getJobState()")
         #    Add your own code here
         argout = "Not implemented"
         return argout
@@ -417,7 +419,7 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevString    Message
 #------------------------------------------------------------------
     def initPlugin(self, argin):
-        print "In ", self.get_name(), "::initPlugin()"
+        self.debug_stream("In ", self.get_name(), "::initPlugin()")
         #    Add your own code here
         argout = "Not implemented"
         return argout
@@ -441,7 +443,7 @@ class DAS(PyTango.Device_4Impl):
 #    argout: DevString    job output xml
 #------------------------------------------------------------------
     def getJobOutput(self, argin):
-        print "In ", self.get_name(), "::getJobOutput()"
+        self.debug_stream("In ", self.get_name(), "::getJobOutput()")
         argout = self._ednaClient.getJobOutput(argin)
         return argout
 
@@ -459,9 +461,9 @@ class DAS(PyTango.Device_4Impl):
     def startRemoteEdnaServer(self):
         try:
             self.set_state(PyTango.DevState.OFF)
-            ServerControl.startServer(self._config.EDNA)
+            self._serverControl.startServer(self._config.EDNA)
             strEdnaDevice = str(self._config.EDNA.tangoDevice)
-            print strEdnaDevice
+            self.debug_stream(strEdnaDevice)
             self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
             self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
             self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
@@ -476,9 +478,9 @@ class DAS(PyTango.Device_4Impl):
     def startRemoteWorkflowServer(self):
         try:
             self.set_state(PyTango.DevState.OFF)
-            ServerControl.startServer(self._config.Workflow)
+            self._serverControl.startServer(self._config.Workflow)
             strWorkflowDevice = str(self._config.Workflow.tangoDevice)
-            print strWorkflowDevice
+            self.debug_stream(strWorkflowDevice)
             self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
             self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
             self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
@@ -553,7 +555,7 @@ class DASClass(PyTango.DeviceClass):
     def __init__(self, name):
         PyTango.DeviceClass.__init__(self, name)
         self.set_type(name);
-        print "In DASClass  constructor"
+        print("In DASClass  constructor")
 
 #==================================================================
 #
@@ -570,6 +572,6 @@ if __name__ == '__main__':
         U.server_run()
 
     except PyTango.DevFailed, e:
-        print '-------> Received a DevFailed exception:', e
+        print('-------> Received a DevFailed exception:', e)
     except Exception, e:
-        print '-------> An unforeseen exception occured....', e
+        print('-------> An unforeseen exception occured....', e)
