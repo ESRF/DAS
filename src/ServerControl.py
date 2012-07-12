@@ -7,8 +7,9 @@ import os, socket, time
 class ServerControl(object):
 
 
-    def __init__(self, _logger_method=None):
+    def __init__(self, _logger_method=None, _iTimeOut=20):
         self._logger_method = _logger_method
+        self._iTimeOut = _iTimeOut
 
 
     def log(self, _strLogMessage):
@@ -38,13 +39,13 @@ class ServerControl(object):
                 # Try to start the principal server
                 self.startIndividualServer(strTangoDevice, strTangoHost, strServerName, _server.principalServer)
                 # Check if server is running
-                bServerIsRunning = self.checkServer(strTangoDevice, 10)
+                bServerIsRunning = self.checkServer(strTangoDevice, self._iTimeOut)
                 if not bServerIsRunning:
                     # We try to start one of the alternative servers (if available)
                     for alternativeServer in _server.alternativeServer:
                         self.startIndividualServer(strTangoDevice, strTangoHost, strServerName, alternativeServer)
                         # Check if server is running
-                        bServerIsRunning = ServerControl.checkServer(strTangoDevice, 10)
+                        bServerIsRunning = ServerControl.checkServer(strTangoDevice, self._iTimeOut)
                         if bServerIsRunning:
                             break
             if bServerIsRunning:
@@ -80,7 +81,7 @@ class ServerControl(object):
         strHost = _serverData.host
         strPathToStartScript = _serverData.startScriptPath
         strPathToStopScript = _serverData.stopScriptPath
-        self.log("Trying to start DasDS server '%s' on the computer %s" % (_strServerName, strHost))
+        self.log("Trying to start server '%s' (tango device %s) on the computer %s" % (_strServerName, _strTangoDevice, strHost))
         if self.isLocalHost(strHost):
             # First run the stop server script - in case the server is stuck
             os.system("%s %s" % (strPathToStopScript, _strServerName))

@@ -85,9 +85,7 @@ class DAS(PyTango.Device_4Impl):
         #self._dasStateMachine.start()
         #self._serverControl = ServerControl()
         self._serverControl = ServerControl(_logger_method=self.debug_stream)
-        self.startRemoteEdnaServer()
-        if self._config.Workflow is not None:
-            self.startRemoteWorkflowServer()
+        self.startRemoteServers()
         self.push_change_event("State", self.get_state())
 
 
@@ -301,7 +299,7 @@ class DAS(PyTango.Device_4Impl):
 # trick - only restart the server if the server has already been detected down
 #         this will happen the second time dev_state()
             if self.get_state() == PyTango.DevState.OFF:
-                self.startRemoteEdnaServer()
+                self.startRemoteServers(_serverToStart="EDNA")
             else:
                 self.set_state(PyTango.DevState.OFF)
 
@@ -309,7 +307,7 @@ class DAS(PyTango.Device_4Impl):
             if not self._serverControl.checkServer(self._config.Workflow.tangoDevice):
 # trick - same trick as above
                 if self.get_state() == PyTango.DevState.OFF:
-                    self.startRemoteWorkflowServer()
+                    self.startRemoteServers(_serverToStart="Workflow")
                 else:
                     self.set_state(PyTango.DevState.OFF)
         argout = self.get_state()
@@ -458,15 +456,23 @@ class DAS(PyTango.Device_4Impl):
         return True
 
 
-    def startRemoteEdnaServer(self):
+    def startRemoteServers(self, _serverToStart="all"):
         try:
             self.set_state(PyTango.DevState.OFF)
-            self._serverControl.startServer(self._config.EDNA)
-            strEdnaDevice = str(self._config.EDNA.tangoDevice)
-            self.debug_stream(strEdnaDevice)
-            self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
-            self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-            self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+            if _serverToStart == "all" or _serverToStart == "EDNA":
+                self._serverControl.startServer(self._config.EDNA)
+                strEdnaDevice = str(self._config.EDNA.tangoDevice)
+                self.info_stream("Trying to start EDNA server: %s" % strEdnaDevice)
+                self._ednaClient = PyTango.DeviceProxy(strEdnaDevice)
+                self._ednaClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+                self._ednaClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
+            if (_serverToStart == "all" or _serverToStart == "Workflow") and (self._config.Workflow is not None):
+                self._serverControl.startServer(self._config.Workflow)
+                strWorkflowDevice = str(self._config.Workflow.tangoDevice)
+                self.debug_stream(strWorkflowDevice)
+                self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
+                self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
+                self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
             self.set_state(PyTango.DevState.RUNNING)
         except Exception, e:
             # Something horrible happened!!!
@@ -475,21 +481,6 @@ class DAS(PyTango.Device_4Impl):
             raise
 
 
-    def startRemoteWorkflowServer(self):
-        try:
-            self.set_state(PyTango.DevState.OFF)
-            self._serverControl.startServer(self._config.Workflow)
-            strWorkflowDevice = str(self._config.Workflow.tangoDevice)
-            self.debug_stream(strWorkflowDevice)
-            self._workflowClient = PyTango.DeviceProxy(strWorkflowDevice)
-            self._workflowClient.subscribe_event("jobSuccess", PyTango.EventType.CHANGE_EVENT, self.jobSuccess, [])
-            self._workflowClient.subscribe_event("jobFailure", PyTango.EventType.CHANGE_EVENT, self.jobFailure, [])
-            self.set_state(PyTango.DevState.RUNNING)
-        except Exception, e:
-            # Something horrible happened!!!
-            self.set_state(PyTango.DevState.FAULT)
-            # TODO: send email
-            raise
 
 #==================================================================
 #
